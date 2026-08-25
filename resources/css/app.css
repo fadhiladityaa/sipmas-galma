@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+    --color-gama-primary: #304d30;
+    --color-gama-secondary: #dff0d8;
+    --color-gama-accent: #5cb85c;
+    --color-gama-bg: #f8f8f0;
+    --color-gama-text: #4b3621;
+    --color-gama-gray: #607d8b;
+    --color-gama-gold: #ffd700;
+    --font-sans: "Lexend", sans-serif;
+    --font-poppins: "Poppins", sans-serif;
+}
+
+@plugin '@tailwindcss/forms';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
+}
