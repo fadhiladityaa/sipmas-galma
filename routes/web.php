@@ -22,7 +22,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/home', function () {
-    return view('home');
+    return view('home', ['title' => 'Home']);
 })->middleware(['auth', 'verified'])->name('home');
 
 Route::middleware('auth')->group(function () {

@@ -276,11 +276,11 @@
         </p>
 
         <!-- Konten dinamis dari staff -->
-        @if (!empty($content))
+        {{-- @if (!empty($content))
             <div style="margin-top: 10px;">
                 {!! nl2br(e($content)) !!}
             </div>
-        @endif
+        @endif --}}
 
     </div>
 
