@@ -26,17 +26,18 @@ class SendWhatsAppJob implements ShouldQueue
 
     public function handle(WhatsAppService $wa)
     {
-        // Cek path file
+        // CEK FILE DENGAN FULL PATH
         $fullPath = storage_path('app/public/' . $this->pdfPath);
-        
+
         if (!file_exists($fullPath)) {
             Log::error('PDF not found in job', ['path' => $fullPath]);
             return;
         }
 
+        // KIRIM RELATIVE PATH, BUKAN FULL PATH
         $wa->sendSuratToWarga(
             $this->phoneNumber,
-            $fullPath,
+            $this->pdfPath,  // <-- KIRIM RELATIVE PATH (bukan $fullPath)
             $this->applicationNumber,
             $this->serviceName
         );

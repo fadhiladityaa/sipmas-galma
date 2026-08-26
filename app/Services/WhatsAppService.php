@@ -106,17 +106,48 @@ class WhatsAppService
      */
     public function sendSuratToWarga($phoneNumber, $pdfPath, $applicationNumber, $serviceName)
     {
-        // Buat URL publik ke PDF
-        $pdfUrl = asset('storage/' . $pdfPath);
+        // HARCODE LINK
+        $pdfUrl = "http://localhost/storage/surat/surat-{$applicationNumber}.pdf";
 
         $caption = "✅ *Surat Anda Telah Diterbitkan!*\n\n";
         $caption .= "Nomor: {$applicationNumber}\n";
         $caption .= "Jenis: {$serviceName}\n\n";
         $caption .= "📄 Download PDF: {$pdfUrl}\n\n";
+        $caption .= "Silahkan click link di atas untuk mendownload atau login ke akun SIPMAS anda untuk mendownload surat!";
         $caption .= "Terima kasih telah menggunakan SIPMAS Galung Maloang.";
 
         return $this->sendText($phoneNumber, $caption);
     }
+
+    /**
+ * Kirim notifikasi ke RT (pengajuan baru)
+ */
+public function notifyRt($rtPhone, $wargaName, $applicationNumber, $serviceName)
+{
+    $message = "📢 *Pengajuan Surat Baru!*\n\n";
+    $message .= "Dari: {$wargaName}\n";
+    $message .= "Nomor: {$applicationNumber}\n";
+    $message .= "Jenis: {$serviceName}\n\n";
+    $message .= "Silakan login ke SIPMAS untuk menyetujui atau menolak pengajuan.";
+
+    return $this->sendText($rtPhone, $message);
+}
+
+/**
+ * Kirim notifikasi ke Staff (pengajuan sudah disetujui RT)
+ */
+    public function notifyStaff($staffPhone, $wargaName, $applicationNumber, $serviceName)
+    {
+        $message = "📢 *Pengajuan Telah Disetujui RT!*\n\n";
+        $message .= "Pemohon: {$wargaName}\n";
+        $message .= "Nomor: {$applicationNumber}\n";
+        $message .= "Jenis: {$serviceName}\n\n";
+        $message .= "Silakan login ke SIPMAS untuk memproses surat.";
+
+        return $this->sendText($staffPhone, $message);
+    }
+
+    
 
     // ... method lainnya (notifyRT, notifyStaff) ...
 }

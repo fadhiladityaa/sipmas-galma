@@ -74,32 +74,16 @@ Route::middleware(['auth', 'role:warga'])->prefix('warga')->name('warga.')->grou
 });
 
 
-Route::get('/test-wa-attach', function () {
-    // Cari surat terakhir
-    $letter = Letter::with('application')->latest()->first();
-    
-    if (!$letter || !$letter->pdf_path) {
-        return '❌ Tidak ada surat dengan PDF.';
-    }
+Route::get('/test-wa', function () {
+    $phoneNumber = '085756956684'; // Ganti dengan nomor HP Anda
 
-    $phoneNumber = '6285756956684'; // Ganti dengan nomor HP Anda
-    $pdfPath = storage_path('app/public/' . $letter->pdf_path);
-    
-    // Cek file
-    if (!file_exists($pdfPath)) {
-        return '❌ File tidak ditemukan: ' . $pdfPath;
-    }
-
-    // Kirim file langsung (attach)
-    $wa = app(WhatsAppService::class);
-    $result = $wa->sendDocument(
+    $wa = app(App\Services\WhatsAppService::class);
+    $result = $wa->sendText(
         $phoneNumber,
-        $pdfPath,
-        'surat-' . $letter->application->application_number . '.pdf',
-        "📄 *TEST: Kirim File Langsung*\n\nIni adalah test pengiriman file PDF via WhatsApp."
+        "📢 *Test WhatsApp dari SIPMAS!*\n\nIni adalah pesan test dari sistem SIPMAS Galung Maloang."
     );
 
-    return $result ? '✅ File PDF berhasil dikirim!' : '❌ Gagal mengirim file.';
+    return $result ? '✅ Pesan berhasil dikirim!' : '❌ Gagal mengirim pesan.';
 });
 
 require __DIR__.'/auth.php';

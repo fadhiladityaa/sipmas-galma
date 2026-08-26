@@ -201,9 +201,6 @@
         </div>
     </div>
 
-
-    <br>
-
     <!-- ISI SURAT -->
     <div style="font-size: 10pt;" class="content">
 
@@ -218,7 +215,7 @@
             <tr>
                 <td class="label">Jabatan</td>
                 <td class="separator">:</td>
-                <td>Lurah Galung Maloang</td>
+                <td><strong>Lurah Galung Maloang</strong></td>
             </tr>
         </table>
 

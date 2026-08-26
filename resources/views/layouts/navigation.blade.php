@@ -18,11 +18,15 @@
                 </div>
             </div>
 
-            <!-- Menu desktop -->
+            <!-- Menu desktop (DENGAN INDIKATOR AKTIF) -->
             <div class="flex items-center space-x-6 text-slate-300">
-                <a href="{{ route('home') }}" class="nav-link"><span>Ajukan Surat</span></a>
-                <a href="#" class="nav-link"><span>Riwayat</span></a>
-                <a href="#" class="nav-link"><span>Dokumen Saya</span></a>
+                <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'text-white' : '' }}">
+                    <span>Ajukan Surat</span>
+                </a>
+                <a href="{{ route('warga.riwayat') }}"
+                    class="nav-link {{ request()->routeIs('warga.riwayat*') ? 'text-white' : '' }}">
+                    <span>Riwayat</span>
+                </a>
             </div>
 
             <!-- Profile desktop -->
@@ -42,7 +46,7 @@
                     </button>
                     <!-- Dropdown -->
                     <div x-show="open"
-                        class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1  z-50">
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50">
                         <a href="{{ route('profile.edit') }}"
                             class="block px-4 py-2 text-sm text-gama-text hover:bg-gama-bg transition">
                             <svg class="w-4 h-4 inline mr-2 text-gama-gray" fill="none" stroke="currentColor"
@@ -80,19 +84,15 @@
             </div>
         </div>
 
-        <!-- MOBILE HEADER (di bawah lg) - CENTER, LOGO DI ATAS, TEKS DI BAWAH -->
-        <!-- ============================================================ -->
+        <!-- MOBILE HEADER -->
         <div class="lg:hidden relative flex items-center justify-center py-3">
-            <!-- Branding: logo di atas, teks di bawah, center -->
             <div class="flex flex-col items-center text-center">
-                <!-- Dua logo -->
                 <div class="flex items-center space-x-3">
-                    <img class="h-10 w-auto rounded-full p-[.10rem] bg-white/50" src="{{ asset('img/logo-galma.png') }}"
-                        alt="Logo Kelurahan">
+                    <img class="h-10 w-auto rounded-full p-[.10rem] bg-white/50"
+                        src="{{ asset('img/logo-galma.png') }}" alt="Logo Kelurahan">
                     <img class="h-10 w-auto rounded-full p-[.10rem] bg-white/50" src="{{ asset('img/logo-ith.png') }}"
                         alt="Logo Kampus">
                 </div>
-                <!-- Teks -->
                 <div class="leading-tight mt-1">
                     <h1 class="text-sm font-bold text-white tracking-tight">SIPMAS Galung Maloang</h1>
                     <p class="text-[10px] text-gama-secondary">Sistem Informasi Pelayanan Masyarakat</p>
@@ -102,36 +102,31 @@
     </div>
 </nav>
 
-<!-- Bottom Navigation untuk Mobile (hanya muncul di layar < lg) -->
+<!-- Bottom Navigation untuk Mobile -->
 <div
     class="lg:hidden fixed bottom-0 left-0 text-slate-300 right-0 bg-gama-primary border-t-2 border-gama-gold/40 shadow-lg shadow-gama-primary/20 z-50">
     <div class="flex items-center justify-around h-16 px-2">
         <!-- Ajukan Surat -->
-        <a href="{{ route('home') }}" class="bottom-nav-link flex flex-col items-center space-y-0.5">
+        <a href="{{ route('home') }}"
+            class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('home') ? 'active' : '' }}">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
             </svg>
             <span class="text-[10px] font-medium">Ajukan Surat</span>
         </a>
         <!-- Riwayat -->
-        <a href="{{ route('warga.riwayat') }}" class="bottom-nav-link flex flex-col items-center space-y-0.5">
+        <a href="{{ route('warga.riwayat') }}"
+            class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('warga.riwayat*') ? 'active' : '' }}">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <span class="text-[10px] font-medium">Riwayat</span>
         </a>
-        <!-- Dokumen Saya -->
-        {{-- <a href="#" class="bottom-nav-link flex flex-col items-center space-y-0.5">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-            </svg>
-            <span class="text-[10px] font-medium">Dokumen Saya</span>
-        </a> --}}
 
         <!-- Profile -->
-        <a href="{{ route('profile.edit') }}" class="bottom-nav-link flex flex-col items-center space-y-0.5">
+        <a href="{{ route('profile.edit') }}"
+            class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('profile*') ? 'active' : '' }}">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -148,7 +143,7 @@
     }
 
     .nav-link.active {
-        @apply bg-white/20 text-white shadow-sm;
+        @apply bg-white/20 text-white shadow-sm font-semibold;
     }
 
     .nav-link.active svg {
@@ -172,7 +167,7 @@
     }
 
     .bottom-nav-link.active {
-        @apply text-gama-gold;
+        @apply text-gama-gold font-semibold;
     }
 
     .bottom-nav-link.active svg {

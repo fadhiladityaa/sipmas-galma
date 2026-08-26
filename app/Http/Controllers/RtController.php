@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Application;
 use App\Models\Rt;
-// use App\Services\WhatsApp\WhatsAppServiceInterface; // <-- COMMENT: WhatsApp Service
+use App\Models\User;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class RtController extends Controller
 {
@@ -15,18 +17,15 @@ class RtController extends Controller
         $user = Auth::user();
         $rt = $user->rt;
 
-        // Jika user tidak punya data RT
         if (!$rt) {
             return redirect()->route('home')->with('error', 'Data RT tidak ditemukan. Silakan hubungi admin.');
         }
 
-        // Statistik
         $total = Application::where('rt_id', $rt->id)->count();
         $waiting = Application::where('rt_id', $rt->id)->where('status', 'menunggu_rt')->count();
         $approved = Application::where('rt_id', $rt->id)->where('status', 'disetujui_rt')->count();
         $rejected = Application::where('rt_id', $rt->id)->where('status', 'ditolak_rt')->count();
 
-        // Pengajuan terbaru yang menunggu
         $recentApplications = Application::where('rt_id', $rt->id)
             ->where('status', 'menunggu_rt')
             ->with(['user', 'service'])
@@ -35,12 +34,7 @@ class RtController extends Controller
             ->get();
 
         return view('rt.dashboard', compact(
-            'rt',
-            'total',
-            'waiting',
-            'approved',
-            'rejected',
-            'recentApplications'
+            'rt', 'total', 'waiting', 'approved', 'rejected', 'recentApplications'
         ));
     }
 
@@ -68,7 +62,6 @@ class RtController extends Controller
     }
 
     public function approve($id)
-    // public function approve($id, WhatsAppServiceInterface $whatsapp) // <-- COMMENT: WhatsApp Service
     {
         $rt = Auth::user()->rt;
         
@@ -82,24 +75,33 @@ class RtController extends Controller
         $application->save();
 
         // =============================================
-        // NOTIFIKASI WHATSAPP (COMMENT SEMENTARA)
+        // KIRIM NOTIFIKASI KE STAFF
         // =============================================
-        // $warga = $application->user;
-        // if ($warga->nomor_hp) {
-        //     $message = "✅ *Pengajuan Surat Disetujui RT*\n\n";
-        //     $message .= "Nomor Pengajuan: {$application->application_number}\n";
-        //     $message .= "Jenis Surat: {$application->service->name}\n\n";
-        //     $message .= "Surat Anda telah disetujui oleh RT dan sedang diproses oleh kelurahan.\n";
-        //     $message .= "Status dapat dipantau di SIPMAS.";
-        //     $whatsapp->sendText($warga->nomor_hp, $message);
-        // }
+        try {
+            $wa = app(WhatsAppService::class);
+            
+            // Ambil semua user dengan role staff
+            $staffUsers = User::where('role', 'staff')->get();
+            
+            foreach ($staffUsers as $staff) {
+                if ($staff->nomor_hp) {
+                    $wa->notifyStaff(
+                        $staff->nomor_hp,
+                        $application->user->name,
+                        $application->application_number,
+                        $application->service->name ?? 'Surat'
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Kirim WA ke Staff gagal: ' . $e->getMessage());
+        }
 
         return redirect()->route('rt.dashboard')
             ->with('success', '✅ Pengajuan berhasil disetujui.');
     }
 
     public function reject(Request $request, $id)
-    // public function reject(Request $request, $id, WhatsAppServiceInterface $whatsapp) // <-- COMMENT: WhatsApp Service
     {
         $request->validate([
             'reason' => 'required|string|max:500',
@@ -114,19 +116,6 @@ class RtController extends Controller
         $application->status = 'ditolak_rt';
         $application->rt_rejection_reason = $request->reason;
         $application->save();
-
-        // =============================================
-        // NOTIFIKASI WHATSAPP (COMMENT SEMENTARA)
-        // =============================================
-        // $warga = $application->user;
-        // if ($warga->nomor_hp) {
-        //     $message = "❌ *Pengajuan Surat Ditolak RT*\n\n";
-        //     $message .= "Nomor Pengajuan: {$application->application_number}\n";
-        //     $message .= "Jenis Surat: {$application->service->name}\n\n";
-        //     $message .= "Alasan: {$request->reason}\n\n";
-        //     $message .= "Silakan perbaiki dan ajukan ulang.";
-        //     $whatsapp->sendText($warga->nomor_hp, $message);
-        // }
 
         return redirect()->route('rt.dashboard')
             ->with('success', '❌ Pengajuan berhasil ditolak.');
