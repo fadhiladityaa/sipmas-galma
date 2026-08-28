@@ -22,13 +22,14 @@
                 <div class="bg-gama-bg/50 px-6 py-4 border-b border-gray-100">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
-                            <h1 class="text-xl font-bold text-gama-text">Proses Pengajuan</h1>
+                            <h1 class="text-xl font-bold text-gama-text">Detail Pengajuan</h1>
                             <p class="text-sm text-gama-gray">{{ $application->application_number }}</p>
                         </div>
                         <span
                             class="px-3 py-1 rounded-full text-sm
                             @if ($application->status == 'disetujui_rt') bg-yellow-100 text-yellow-700
                             @elseif($application->status == 'in_progress') bg-blue-100 text-blue-700
+                            @elseif($application->status == 'issued') bg-green-100 text-green-700
                             @else bg-gray-100 text-gray-700 @endif">
                             {{ str_replace('_', ' ', ucfirst($application->status)) }}
                         </span>
@@ -36,13 +37,13 @@
                 </div>
 
                 <div class="p-6 space-y-6">
-                    <!-- Data Pemohon -->
+                    {{-- DATA PEMOHON (LENGKAP) --}}
                     <div>
                         <h3 class="text-sm font-semibold text-gama-text uppercase tracking-wider mb-3">Data Pemohon</h3>
                         <div
                             class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-gama-bg/60 rounded-xl p-4 border border-gray-100">
                             <div>
-                                <span class="text-xs text-gama-gray">Nama</span>
+                                <span class="text-xs text-gama-gray">Nama Lengkap</span>
                                 <br>
                                 <span class="text-sm font-medium">{{ $application->user->name }}</span>
                             </div>
@@ -52,19 +53,60 @@
                                 <span class="text-sm font-medium">{{ $application->user->nik ?? '-' }}</span>
                             </div>
                             <div>
-                                <span class="text-xs text-gama-gray">No. HP</span>
+                                <span class="text-xs text-gama-gray">Tempat Lahir</span>
                                 <br>
-                                <span class="text-sm">{{ $application->user->nomor_hp ?? '-' }}</span>
+                                <span class="text-sm font-medium">{{ $application->user->tempat_lahir ?? '-' }}</span>
                             </div>
                             <div>
+                                <span class="text-xs text-gama-gray">Tanggal Lahir</span>
+                                <br>
+                                <span
+                                    class="text-sm font-medium">{{ $application->user->tanggal_lahir ? \Carbon\Carbon::parse($application->user->tanggal_lahir)->format('d/m/Y') : '-' }}</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gama-gray">Jenis Kelamin</span>
+                                <br>
+                                <span class="text-sm font-medium">
+                                    @php
+                                        $gender = $application->user->jenis_kelamin ?? '-';
+                                        if ($gender == 'L') {
+                                            $gender = 'Laki-laki';
+                                        } elseif ($gender == 'P') {
+                                            $gender = 'Perempuan';
+                                        }
+                                    @endphp
+                                    {{ $gender }}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gama-gray">Agama</span>
+                                <br>
+                                <span class="text-sm font-medium">{{ $application->user->agama ?? '-' }}</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gama-gray">Pekerjaan</span>
+                                <br>
+                                <span class="text-sm font-medium">{{ $application->user->pekerjaan ?? '-' }}</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gama-gray">No. HP</span>
+                                <br>
+                                <span class="text-sm font-medium">{{ $application->user->nomor_hp ?? '-' }}</span>
+                            </div>
+                            <div class="sm:col-span-2">
                                 <span class="text-xs text-gama-gray">Alamat</span>
                                 <br>
-                                <span class="text-sm">{{ $application->user->alamat ?? '-' }}</span>
+                                <span class="text-sm font-medium">{{ $application->user->alamat ?? '-' }}</span>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <span class="text-xs text-gama-gray">Email</span>
+                                <br>
+                                <span class="text-sm font-medium">{{ $application->user->email }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Dokumen KTP & KK -->
+                    {{-- PREVIEW KTP & KK --}}
                     <div>
                         <h3 class="text-sm font-semibold text-gama-text uppercase tracking-wider mb-3">Dokumen Pendukung
                         </h3>
@@ -80,14 +122,14 @@
                                         </svg>
                                         <div>
                                             <p class="text-sm font-medium text-gama-text">KTP</p>
-                                            @if ($user->ktp_path)
+                                            @if ($application->user->ktp_path)
                                                 <p class="text-xs text-gama-gray">✓ Dokumen tersedia</p>
                                             @else
                                                 <p class="text-xs text-red-500">⚠ Belum upload KTP</p>
                                             @endif
                                         </div>
                                     </div>
-                                    @if ($user->ktp_path)
+                                    @if ($application->user->ktp_path)
                                         <button type="button" onclick="previewKTP()"
                                             class="px-3 py-1.5 text-sm bg-gama-primary/10 text-gama-primary hover:bg-gama-primary hover:text-white rounded-lg transition">
                                             Lihat
@@ -109,14 +151,14 @@
                                         </svg>
                                         <div>
                                             <p class="text-sm font-medium text-gama-text">KK</p>
-                                            @if ($user->kk_path)
+                                            @if ($application->user->kk_path)
                                                 <p class="text-xs text-gama-gray">✓ Dokumen tersedia</p>
                                             @else
                                                 <p class="text-xs text-red-500">⚠ Belum upload KK</p>
                                             @endif
                                         </div>
                                     </div>
-                                    @if ($user->kk_path)
+                                    @if ($application->user->kk_path)
                                         <button type="button" onclick="previewKK()"
                                             class="px-3 py-1.5 text-sm bg-gama-primary/10 text-gama-primary hover:bg-gama-primary hover:text-white rounded-lg transition">
                                             Lihat
@@ -129,7 +171,7 @@
                         </div>
                     </div>
 
-                    <!-- Data Surat -->
+                    {{-- DATA SURAT --}}
                     <div>
                         <h3 class="text-sm font-semibold text-gama-text uppercase tracking-wider mb-3">Data Surat</h3>
                         <div class="bg-gama-bg/60 rounded-xl p-4 border border-gray-100">
@@ -165,16 +207,11 @@
                         </div>
                     </div>
 
-                    <!-- Editor Surat -->
-                    <div>
-                        <h3 class="text-sm font-semibold text-gama-text uppercase tracking-wider mb-3">Isi Surat</h3>
-
-                        @if ($application->status == 'disetujui_rt')
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
-                                <p class="text-sm text-yellow-700">
-                                    ⚠️ Klik <strong>"Mulai Proses"</strong> untuk mulai menyusun surat.
-                                </p>
-                            </div>
+                    <!-- FORM PROSES / UPLOAD SURAT                   -->
+                    @if ($application->status == 'disetujui_rt')
+                        <div>
+                            <h3 class="text-sm font-semibold text-gama-text uppercase tracking-wider mb-3">Proses
+                                Pengajuan</h3>
                             <form action="{{ route('staff.application.process', $application->id) }}" method="POST">
                                 @csrf
                                 <button type="submit"
@@ -182,58 +219,92 @@
                                     🚀 Mulai Proses
                                 </button>
                             </form>
-                        @elseif($application->status == 'in_progress')
-                            <form action="{{ route('staff.application.approve', $application->id) }}" method="POST">
+                        </div>
+                    @elseif($application->status == 'in_progress')
+                        <div>
+                            <h3 class="text-sm font-semibold text-gama-text uppercase tracking-wider mb-3">Upload Surat
+                                Jadi</h3>
+
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
+                                <p class="text-sm text-yellow-700">
+                                    ⚠️ Upload surat yang sudah jadi (sudah dibarcode/ditandatangani).
+                                </p>
+                            </div>
+
+                            <form action="{{ route('staff.application.upload-surat', $application->id) }}"
+                                method="POST" enctype="multipart/form-data" id="uploadForm">
                                 @csrf
 
-                                <!-- Field nomor surat -->
+                                <!-- Drag & Drop Upload Area -->
                                 <div class="mb-4">
-                                    <label for="letter_number" class="block text-sm font-medium text-gama-text">Nomor
-                                        Surat</label>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <span
-                                            class="text-sm text-gama-gray bg-gama-bg px-3 py-2 rounded-lg border border-gray-200">148.3/</span>
-                                        <input type="text" name="letter_number" id="letter_number"
-                                            value="{{ old('letter_number', $letter->letter_number ?? '') }}"
-                                            placeholder="Contoh: 001"
-                                            class="flex-1 block w-full border-gray-200 rounded-lg focus:border-gama-accent focus:ring-gama-accent">
-                                        <span
-                                            class="text-sm text-gama-gray bg-gama-bg px-3 py-2 rounded-lg border border-gray-200">/GLM</span>
+                                    <label class="block text-sm font-medium text-gama-text mb-2">Upload Surat
+                                        (PDF)</label>
+
+                                    <div id="uploadArea" class="upload-area"
+                                        onclick="document.getElementById('surat_pdf').click()">
+                                        <span class="icon">📄</span>
+                                        <div class="text">Seret & lepas file PDF di sini</div>
+                                        <div class="sub-text">atau klik untuk memilih file</div>
+                                        <div class="file-name" id="fileName">📎 <span id="fileNameText"></span>
+                                        </div>
                                     </div>
-                                    <p class="text-xs text-gama-gray mt-1">* Kosongkan untuk auto-generate nomor</p>
+
+                                    <input type="file" name="surat_pdf" id="surat_pdf" accept=".pdf" required
+                                        style="display: none;" onchange="handleFileSelect(event)">
+
+                                    <p class="text-xs text-gama-gray mt-2">* Format PDF, maks 5MB</p>
                                 </div>
 
-                                <!-- Isi Surat -->
-                                <div class="mb-4">
-                                    <label for="content" class="block text-sm font-medium text-gama-text">Isi
-                                        Surat</label>
-                                    <textarea name="content" id="content" rows="15"
-                                        class="w-full border-gray-200 rounded-xl focus:border-gama-accent focus:ring-2 focus:ring-gama-accent/20 font-mono text-sm p-4"
-                                        placeholder="Tulis isi surat di sini...">{{ old('content', $letter->content ?? '') }}</textarea>
-                                </div>
-
-                                <!-- Tombol Aksi -->
+                                <!-- Tombol -->
                                 <div class="flex flex-wrap gap-3">
                                     <button type="submit"
-                                        class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition">
-                                        Terbitkan Surat
+                                        class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition">
+                                        📤 Upload Surat
                                     </button>
-                                    <button type="button" onclick="submitPreview()"
-                                        class="px-6 py-2.5 bg-gama-primary hover:bg-[#1f3320] text-white font-medium rounded-lg transition">
-                                        Preview
+                                    <button type="button"
+                                        onclick="window.location.href='{{ route('staff.applications') }}'"
+                                        class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
+                                        Batal
                                     </button>
                                 </div>
                             </form>
 
-                            <!-- Tombol Tolak -->
-                            <div class="mt-4 pt-4 border-t border-gray-200">
-                                <button onclick="openRejectModal()"
-                                    class="px-6 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-medium rounded-lg transition">
-                                    Tolak Pengajuan
-                                </button>
+                            <!-- Jika sudah upload, tampilkan tombol Terbitkan -->
+                            @if ($letter && $letter->pdf_path)
+                                <div class="mt-4 pt-4 border-t border-gray-200">
+                                    <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
+                                        <p class="text-sm text-green-700">
+                                            ✅ Surat sudah diupload: <strong>{{ basename($letter->pdf_path) }}</strong>
+                                        </p>
+                                    </div>
+                                    <form action="{{ route('staff.application.terbitkan', $application->id) }}"
+                                        method="POST">
+                                        @csrf
+                                        <button type="submit"
+                                            class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition">
+                                            🚀 Terbitkan Surat
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
+                        </div>
+                    @elseif($application->status == 'issued')
+                        <div>
+                            <h3 class="text-sm font-semibold text-gama-text uppercase tracking-wider mb-3">Status Surat
+                            </h3>
+                            <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                                <p class="text-sm text-green-700">
+                                    ✅ Surat sudah diterbitkan pada {{ $application->issued_at->format('d/m/Y H:i') }}
+                                </p>
+                                @if ($letter && $letter->pdf_path)
+                                    <a href="{{ asset('storage/' . $letter->pdf_path) }}" target="_blank"
+                                        class="mt-2 inline-block px-4 py-2 bg-gama-primary text-white rounded-lg text-sm hover:bg-[#1f3320] transition">
+                                        📄 Lihat Surat
+                                    </a>
+                                @endif
                             </div>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
 
                     <!-- Tombol Kembali -->
                     <div class="pt-4 border-t border-gray-100">
@@ -260,8 +331,8 @@
                 </button>
             </div>
             <div class="flex items-center justify-center min-h-[200px]">
-                @if ($user->ktp_path)
-                    <img src="{{ asset('storage/' . $user->ktp_path) }}" alt="KTP"
+                @if ($application->user->ktp_path)
+                    <img src="{{ asset('storage/' . $application->user->ktp_path) }}" alt="KTP"
                         class="w-full h-auto rounded-lg max-h-[500px] object-contain">
                 @else
                     <p class="text-gama-gray">Belum ada KTP</p>
@@ -283,8 +354,8 @@
                 </button>
             </div>
             <div class="flex items-center justify-center min-h-[200px]">
-                @if ($user->kk_path)
-                    <img src="{{ asset('storage/' . $user->kk_path) }}" alt="KK"
+                @if ($application->user->kk_path)
+                    <img src="{{ asset('storage/' . $application->user->kk_path) }}" alt="KK"
                         class="w-full h-auto rounded-lg max-h-[500px] object-contain">
                 @else
                     <p class="text-gama-gray">Belum ada KK</p>
@@ -292,14 +363,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Form Preview (Hidden) -->
-    <form id="previewForm" action="{{ route('staff.application.preview', $application->id) }}" method="post"
-        target="_blank">
-        @csrf
-        <input type="hidden" name="content" id="preview_content">
-        <input type="hidden" name="letter_number" id="preview_letter_number">
-    </form>
 
     <!-- Modal Tolak -->
     <div id="rejectModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden items-center justify-center"
@@ -323,27 +386,138 @@
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- CSS & JAVASCRIPT                             -->
+    <style>
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-area:hover {
+            border-color: #5cb85c;
+            background-color: #f0fdf4;
+        }
+
+        .upload-area.dragover {
+            border-color: #5cb85c;
+            background-color: #dcfce7;
+            transform: scale(1.01);
+        }
+
+        .upload-area .icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .upload-area .text {
+            font-size: 16px;
+            color: #475569;
+        }
+
+        .upload-area .sub-text {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .upload-area .file-name {
+            font-weight: 600;
+            color: #304d30;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .upload-area.has-file {
+            border-color: #5cb85c;
+            background-color: #f0fdf4;
+        }
+
+        .upload-area.has-file .file-name {
+            display: block;
+        }
+    </style>
+
     <script>
-        function openRejectModal() {
-            document.getElementById('rejectModal').classList.remove('hidden');
-            document.getElementById('rejectModal').classList.add('flex');
+        // DRAG & DROP UPLOAD
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('surat_pdf');
+        const fileNameText = document.getElementById('fileNameText');
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
-        function closeRejectModal() {
-            document.getElementById('rejectModal').classList.add('hidden');
-            document.getElementById('rejectModal').classList.remove('flex');
+        // Highlight drop area
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.remove('dragover');
+            });
+        });
+
+        // Handle drop
+        uploadArea.addEventListener('drop', function(e) {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect({
+                    target: fileInput
+                });
+            }
+        });
+
+        // Handle file select from click
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+
+                // Validate file type
+                if (file.type !== 'application/pdf') {
+                    alert('⚠️ Hanya file PDF yang diperbolehkan!');
+                    fileInput.value = '';
+                    uploadArea.classList.remove('has-file');
+                    return;
+                }
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('⚠️ Ukuran file maksimal 5MB!');
+                    fileInput.value = '';
+                    uploadArea.classList.remove('has-file');
+                    return;
+                }
+
+                fileNameText.textContent = `${fileName} (${fileSize} MB)`;
+                uploadArea.classList.add('has-file');
+            }
         }
 
-        function submitPreview() {
-            var content = document.getElementById('content').value;
-            var letterNumber = document.getElementById('letter_number').value;
-
-            document.getElementById('preview_content').value = content;
-            document.getElementById('preview_letter_number').value = letterNumber;
-            document.getElementById('previewForm').submit();
-        }
-
+        // PREVIEW KTP & KK
         function previewKTP() {
             document.getElementById('ktp-modal').classList.remove('hidden');
             document.getElementById('ktp-modal').classList.add('flex');
@@ -357,6 +531,17 @@
         function closePreview(id) {
             document.getElementById(id).classList.add('hidden');
             document.getElementById(id).classList.remove('flex');
+        }
+
+        // REJECT MODAL
+        function openRejectModal() {
+            document.getElementById('rejectModal').classList.remove('hidden');
+            document.getElementById('rejectModal').classList.add('flex');
+        }
+
+        function closeRejectModal() {
+            document.getElementById('rejectModal').classList.add('hidden');
+            document.getElementById('rejectModal').classList.remove('flex');
         }
     </script>
 </x-app-layout>

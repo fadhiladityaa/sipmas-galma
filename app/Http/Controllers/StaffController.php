@@ -103,15 +103,105 @@ class StaffController extends Controller
      */
     public function detail($id)
     {
-        $application = Application::with(['user', 'service', 'documents'])
-            ->whereIn('status', ['disetujui_rt', 'in_progress', 'waiting_approval'])
-            ->findOrFail($id);
+         $application = Application::with(['user', 'service', 'documents', 'letter'])
+        ->whereIn('status', ['disetujui_rt', 'in_progress', 'issued'])
+        ->findOrFail($id);
 
         $letter = Letter::where('application_id', $application->id)->first();
-        $services = Service::where('is_active', true)->get();
-        $user = $application->user;
+        $user = $application->user; // <-- TAMBAHKAN INI
 
-        return view('staff.detail', compact('application', 'services', 'letter', 'user'));
+        return view('staff.detail', compact('application', 'letter', 'user'));
+    }
+
+
+    public function terbitkan($id)
+    {
+        $application = Application::where('status', 'in_progress')
+            ->where('staff_id', Auth::id())
+            ->with(['user', 'service', 'letter'])
+            ->findOrFail($id);
+
+        $letter = $application->letter;
+
+        if (!$letter || !$letter->pdf_path) {
+            return back()->with('error', '⚠️ Surat belum diupload. Upload surat terlebih dahulu.');
+        }
+
+        // Update status
+        $application->status = 'issued';
+        $application->issued_at = now();
+        $application->save();
+
+        // Update letter
+        $letter->issued_at = now();
+        $letter->save();
+
+        // =============================================
+        // KIRIM NOTIFIKASI KE WARGA
+        // =============================================
+        try {
+            $wa = app(WhatsAppService::class);
+            
+            $phoneNumber = $application->user->nomor_hp;
+            $pdfPath = $letter->pdf_path;
+            
+            if ($phoneNumber && $pdfPath) {
+                $wa->sendSuratToWarga(
+                    $phoneNumber,
+                    $pdfPath,
+                    $application->application_number,
+                    $application->service->name ?? 'Surat'
+                );
+            }
+        } catch (\Exception $e) {
+            Log::error('Kirim WA ke warga gagal: ' . $e->getMessage());
+        }
+
+        return redirect()->route('staff.applications')
+            ->with('success', '✅ Surat berhasil diterbitkan dan dikirim ke WhatsApp warga.');
+    }
+
+
+    public function uploadSurat(Request $request, $id)
+    {
+        $application = Application::where('status', 'in_progress')
+            ->where('staff_id', Auth::id())
+            ->findOrFail($id);
+
+        $request->validate([
+            'surat_pdf' => 'required|file|mimes:pdf|max:5120', // Max 5MB
+            'letter_number' => 'nullable|string|max:50',
+        ]);
+
+        // Generate nomor surat
+        $letterNumber = $request->letter_number;
+        if ($letterNumber) {
+            $fullLetterNumber = '148.3/' . $letterNumber . '/GLM';
+        } else {
+            $lastNumber = Letter::max('letter_number') ?? 0;
+            $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+            $fullLetterNumber = '148.3/' . $newNumber . '/GLM';
+            $letterNumber = $newNumber;
+        }
+
+        // Simpan file PDF
+        $file = $request->file('surat_pdf');
+        $path = $file->store('surat/uploaded', 'public');
+        
+        // Simpan ke tabel letters
+        $letter = Letter::updateOrCreate(
+            ['application_id' => $application->id],
+            [
+                'staff_id' => Auth::id(),
+                'letter_number' => $letterNumber,
+                'content' => null, // Tidak ada konten manual
+                'pdf_path' => $path,
+                'issued_at' => null,
+            ]
+        );
+
+        return redirect()->route('staff.application.detail', $id)
+            ->with('success', '✅ Surat berhasil diupload. Klik "Terbitkan" untuk mengirim ke warga.');
     }
 
     /**
@@ -120,66 +210,15 @@ class StaffController extends Controller
     public function process(Request $request, $id)
     {
         $application = Application::where('status', 'disetujui_rt')->findOrFail($id);
-
         $application->status = 'in_progress';
         $application->staff_id = Auth::id();
         $application->processed_at = now();
         $application->save();
 
         return redirect()->route('staff.application.detail', $id)
-            ->with('success', 'Pengajuan mulai diproses.');
+            ->with('success', '✅ Pengajuan mulai diproses. Silakan upload surat yang sudah jadi.');
     }
 
-    /**
-     * Bersihkan HTML yang tidak lengkap/rusak
-     */
-    private function cleanHtmlContent($content)
-    {
-        // 1. Hapus tag yang tidak lengkap
-        $content = preg_replace('/<[^>]*$/', '', $content);
-        $content = preg_replace('/^[^<]*>/', '', $content);
-        
-        // 2. Tutup tag yang tidak ditutup
-        $content = $this->closeUnclosedTags($content);
-        
-        // 3. Hapus atribut kosong atau rusak
-        $content = preg_replace('/\s+style="[^"]*"/', '', $content);
-        
-        // 4. Hapus komentar HTML yang tidak lengkap
-        $content = preg_replace('/<!--.*?-->/', '', $content);
-        
-        // 5. Hapus whitespace berlebih
-        $content = trim($content);
-        
-        return $content;
-    }
-
-    /**
-     * Tutup tag HTML yang tidak ditutup
-     */
-    private function closeUnclosedTags($html)
-    {
-        $dom = new \DOMDocument();
-        libxml_use_internal_errors(true);
-        
-        // Wrap dengan body untuk menghindari error
-        $dom->loadHTML('<?xml encoding="UTF-8">' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        libxml_clear_errors();
-        
-        // Simpan HTML yang sudah diperbaiki
-        $fixedHtml = $dom->saveHTML();
-        
-        // Hapus wrapper DOCTYPE dan html/body jika ada
-        $fixedHtml = preg_replace('/^<!DOCTYPE.*?>/', '', $fixedHtml);
-        $fixedHtml = preg_replace('/^<html>.*?<body>/', '', $fixedHtml);
-        $fixedHtml = preg_replace('/<\/body><\/html>$/', '', $fixedHtml);
-        
-        return trim($fixedHtml);
-    }
-
-    /**
-     * Approve dan terbitkan surat (dengan generate PDF)
-     */
     public function approve(Request $request, $id)
     {
         $application = Application::whereIn('status', ['in_progress', 'waiting_approval'])->findOrFail($id);
@@ -284,142 +323,4 @@ class StaffController extends Controller
             ->with('success', '❌ Pengajuan ditolak.');
     }
 
-    /**
-     * Preview surat (HTML atau PDF)
-     */
-    public function preview(Request $request, $id)
-    {
-        $application = Application::with(['user', 'service'])->findOrFail($id);
-        $letter = Letter::where('application_id', $application->id)->first();
-
-         $content = $request->input('content', $request->query('content', $letter->content ?? ''));
-         $letterNumber = $request->input('letter_number', $request->query('letter_number', $letter->letter_number ?? ''));   
-        $fullLetterNumber = $letterNumber ? '148.3/' . $letterNumber . '/GLM' : '148.3/ /GLM';
-
-        // Cek apakah request untuk download PDF
-        if ($request->has('download_pdf')) {
-            return $this->downloadPdf($application, $content, $fullLetterNumber);
-        }
-
-        // Cek apakah request untuk preview PDF (inline)
-        if ($request->has('preview_pdf')) {
-            return $this->previewPdf($application, $content, $fullLetterNumber);
-        }
-
-        $serviceId = $application->service_id ?? 0;
-
-       $templateMap = [
-            1 => 'format-1',   // Domisili
-            2 => 'format-ortu', // Penghasilan Orang Tua
-            3 => 'format-2',   // Tidak Mampu
-            4 => 'format-2',   // Usaha
-            5 => 'format-3',   // Izin Keramaian
-            6 => 'format-4',   // BBM  <-- PASTIKAN ID 6
-            7 => 'format-2',   // Belum Menikah
-            8 => 'format-1',   // Kematian
-            9 => 'format-1',   // Tanah Tidak Sengketa
-            10 => 'format-3',  // SKCK
-        ];
-
-        $templateName = $templateMap[$serviceId] ?? 'format-1';
-
-        $data = [
-            'application' => $application,
-            'user' => $application->user,
-            'content' => $content,
-            'letter_number' => $fullLetterNumber,
-            'tanggal' => now()->format('d F Y'),
-            'is_preview' => true,
-            'template_name' => $templateName,
-            'auto_print' => $request->has('print'),
-            'letter' => $letter,
-            'pejabat' => $this->settingService->getLurahData(),
-            'barcode_image' => $this->settingService->getBarcodeImage(),
-        ];
-
-        // Tambahkan flag jika PDF sudah di-generate
-        if ($request->has('pdf_generated')) {
-            $data['pdf_generated'] = true;
-        }
-
-        return view('staff.preview', $data);
-    }
-
-    /**
-     * Download PDF surat yang sudah diterbitkan
-     */
-    public function downloadPdfSurat($id)
-    {
-        $letter = Letter::where('application_id', $id)->firstOrFail();
-
-        if (!$letter->pdf_path || !Storage::disk('public')->exists($letter->pdf_path)) {
-            // Jika PDF belum ada, generate ulang
-            $application = Application::with(['user', 'service'])->findOrFail($id);
-            $pdfData = $this->preparePdfData($application, $letter->content, $letter->letter_number);
-            $pdfPath = $this->pdfService->generateFromView(
-                'staff.preview',
-                $pdfData,
-                'surat-' . $application->application_number
-            );
-            $letter->pdf_path = $pdfPath;
-            $letter->save();
-        }
-
-        return response()->download(storage_path('app/public/' . $letter->pdf_path));
-    }
-
-    /**
-     * Siapkan data untuk PDF
-     */
-    private function preparePdfData($application, $content, $letterNumber)
-    {
-        $cleanContent = strip_tags($content); // Hanya teks biasa
-        $cleanContent = nl2br($cleanContent); // Ubah enter jadi <br>
-        $serviceId = $application->service_id ?? 0;
-
-        $templateMap = [
-            1 => 'format-1', 2 => 'format-ortu', 8 => 'format-1', 9 => 'format-1',
-            3 => 'format-2', 4 => 'format-2', 7 => 'format-2',
-            5 => 'format-3', 10 => 'format-3',
-            6 => 'format-4',
-        ];
-
-        $templateName = $templateMap[$serviceId] ?? 'format-1';
-
-        return [
-            'application' => $application,
-            'user' => $application->user,
-            'content' => $cleanContent,
-            'letter_number' => $letterNumber,
-            'tanggal' => now()->format('d F Y'),
-            'is_preview' => false,
-            'template_name' => $templateName,
-            'auto_print' => false,
-            'pejabat' => $this->settingService->getLurahData(),
-            'barcode_image' => $this->settingService->getBarcodeImage(),
-            'is_pdf' => true,
-        ];
-    }
-
-    /**
-     * Generate PDF dari preview (untuk download)
-     */
-    private function downloadPdf($application, $content, $letterNumber)
-    {
-        $data = $this->preparePdfData($application, $content, $letterNumber);
-        $filename = 'surat-' . $application->application_number;
-
-        return $this->pdfService->downloadPdf('staff.preview', $data, $filename);
-    }
-
-    /**
-     * Generate PDF dari preview (untuk preview inline)
-     */
-    private function previewPdf($application, $content, $letterNumber)
-    {
-        $data = $this->preparePdfData($application, $content, $letterNumber);
-        $filename = 'surat-' . $application->application_number;
-
-        return $this->pdfService->inlinePdf('staff.preview', $data, $filename);
-    }
 }

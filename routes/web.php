@@ -56,13 +56,9 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::get('/applications', [StaffController::class, 'applications'])->name('applications');
     Route::get('/applications/{id}', [StaffController::class, 'detail'])->name('application.detail');
     Route::post('/applications/{id}/process', [StaffController::class, 'process'])->name('application.process');
-    Route::post('/applications/{id}/approve', [StaffController::class, 'approve'])->name('application.approve');
+    Route::post('/applications/{id}/upload-surat', [StaffController::class, 'uploadSurat'])->name('application.upload-surat');
+    Route::post('/applications/{id}/terbitkan', [StaffController::class, 'terbitkan'])->name('application.terbitkan');
     Route::post('/applications/{id}/reject', [StaffController::class, 'reject'])->name('application.reject');
-    Route::get('/applications/{id}/preview', [StaffController::class, 'preview'])->name('application.preview');     // Untuk download PDF
-    Route::post('/applications/{id}/preview', [StaffController::class, 'preview'])->name('application.preview');    // Untuk preview dari form
-    
-    // ROUTE UNTUK PDF (TAMBAHAN BARU)
-    Route::get('/surat/download-pdf/{id}', [StaffController::class, 'downloadPdfSurat'])->name('surat.download-pdf');
 });
 
 // Admin Routes
@@ -70,7 +66,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/settings', [SettingController::class, 'index'])->name('settings');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 });
-
 
 Route::middleware(['auth', 'role:warga'])->prefix('warga')->name('warga.')->group(function () {
     // Halaman riwayat (daftar semua pengajuan)
