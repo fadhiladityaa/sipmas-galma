@@ -294,8 +294,9 @@
     </div>
 
     <!-- Form Preview (Hidden) -->
-    <form id="previewForm" action="{{ route('staff.application.preview', $application->id) }}" method="GET"
+    <form id="previewForm" action="{{ route('staff.application.preview', $application->id) }}" method="post"
         target="_blank">
+        @csrf
         <input type="hidden" name="content" id="preview_content">
         <input type="hidden" name="letter_number" id="preview_letter_number">
     </form>

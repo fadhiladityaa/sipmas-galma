@@ -1,14 +1,15 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RtController;
-use App\Http\Controllers\StaffController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\RiwayatController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PengajuanSuratController;
-use App\Services\WhatsAppService;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\RtController;
+use App\Http\Controllers\RwController;
+use App\Http\Controllers\StaffController;
 use App\Models\Letter;
+use App\Services\WhatsAppService;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -38,6 +39,15 @@ Route::middleware(['auth', 'role:rt'])->prefix('rt')->name('rt.')->group(functio
     Route::get('/applications/{id}', [RtController::class, 'detail'])->name('application.detail');
     Route::post('/applications/{id}/approve', [RtController::class, 'approve'])->name('application.approve');
     Route::post('/applications/{id}/reject', [RtController::class, 'reject'])->name('application.reject');
+});
+
+// route rw
+Route::middleware(['auth', 'role:rw'])->prefix('rw')->name('rw.')->group(function () {
+    Route::get('/dashboard', [RwController::class, 'dashboard'])->name('dashboard');
+    Route::get('/applications', [RwController::class, 'applications'])->name('applications');
+    Route::get('/applications/{id}', [RwController::class, 'detail'])->name('application.detail');
+    Route::post('/applications/{id}/approve', [RwController::class, 'approve'])->name('application.approve');
+    Route::post('/applications/{id}/reject', [RwController::class, 'reject'])->name('application.reject');
 });
 
 // Staff Routes
@@ -85,5 +95,7 @@ Route::get('/test-wa', function () {
 
     return $result ? '✅ Pesan berhasil dikirim!' : '❌ Gagal mengirim pesan.';
 });
+
+
 
 require __DIR__.'/auth.php';

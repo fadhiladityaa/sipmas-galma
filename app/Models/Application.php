@@ -25,6 +25,7 @@ class Application extends Model
         'rt_approved_at', // tambahkan
         'rt_approved_by', // tambahkan
         'rt_rejection_reason', // tambahkan
+        'rw_id',
     ];
 
     protected $casts = [
@@ -66,6 +67,12 @@ class Application extends Model
     public function rtApprovedBy()
     {
         return $this->belongsTo(User::class, 'rt_approved_by');
+    }
+
+    // Tambahkan relasi
+    public function rw()
+    {
+        return $this->belongsTo(Rw::class);
     }
 
     // Helper: cek status

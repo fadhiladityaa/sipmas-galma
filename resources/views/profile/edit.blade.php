@@ -12,13 +12,18 @@
             @php
                 $user = Auth::user();
                 $completed = 0;
-                $total = 11;
+                $total = 12;
                 if ($user->nik) {
                     $completed++;
                 }
                 if ($user->tempat_lahir) {
                     $completed++;
                 }
+
+                if ($user->rw_id) {
+                    $completed++;
+                }
+
                 if ($user->tanggal_lahir) {
                     $completed++;
                 }

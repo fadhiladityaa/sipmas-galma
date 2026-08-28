@@ -89,6 +89,7 @@ class PengajuanSuratController extends Controller
         $application = Application::create([
             'user_id' => $user->id,
             'rt_id' => $user->rt_id,
+            'rw_id' => $user->rw_id,
             'service_id' => $request->service_id,
             'application_number' => $applicationNumber,
             'status' => 'menunggu_rt',
@@ -178,9 +179,6 @@ class PengajuanSuratController extends Controller
             }
         }
 
-        // =============================================
-        // 3. DAPATKAN NAMA SURAT
-        // =============================================
         $serviceName = $request->service_id 
             ? Service::find($request->service_id)->name 
             : ($request->custom_service_name ?? 'Surat');
@@ -211,6 +209,31 @@ class PengajuanSuratController extends Controller
             }
         } catch (\Exception $e) {
             Log::error('Kirim WA ke RT gagal: ' . $e->getMessage());
+        }
+
+        try {
+            $wa = app(WhatsAppService::class);
+            
+            // Ambil user yang memiliki role RW berdasarkan rw_id
+            $rwUser = User::where('rw_id', $user->rw_id)
+                ->where('role', 'rw')
+                ->first();
+            
+            if ($rwUser && $rwUser->nomor_hp) {
+                $wa->notifyRw(
+                    $rwUser->nomor_hp,
+                    $user->name,
+                    $applicationNumber,
+                    $serviceName
+                );
+            } else {
+                Log::warning('RW tidak ditemukan atau tidak punya nomor HP', [
+                    'rw_id' => $user->rw_id,
+                    'user_id' => $user->id
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Kirim WA ke RW gagal: ' . $e->getMessage());
         }
 
         return redirect()->route('home')->with('success', 'Pengajuan berhasil dikirim dan menunggu persetujuan RT.');

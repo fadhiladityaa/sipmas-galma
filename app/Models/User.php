@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -26,7 +25,8 @@ class User extends Authenticatable
         'nomor_hp',
         'ktp_path',
         'kk_path',
-        'rt_id'
+        'rt_id',
+        'rw_id',
     ];
 
     protected $hidden = [
@@ -43,20 +43,49 @@ class User extends Authenticatable
         ];
     }
 
-    // Relasi
     public function documents()
     {
         return $this->hasMany(Document::class);
     }
+
+    // ==========================================
+    // RELASI WARGA
+    // ==========================================
+
+    // RT tempat tinggal warga
+    public function rt()
+    {
+        return $this->belongsTo(Rt::class, 'rt_id');
+    }
+
+    // RW tempat tinggal warga
+    public function rw()
+    {
+        return $this->belongsTo(Rw::class, 'rw_id');
+    }
+
+    // ==========================================
+    // RELASI AKUN RW
+    // ==========================================
+
+    // Data RW yang dimiliki oleh akun RW
+    public function rwProfile()
+    {
+        return $this->hasOne(Rw::class, 'user_id');
+    }
+
+    // ==========================================
+    // RELASI LAIN
+    // ==========================================
 
     public function applications()
     {
         return $this->hasMany(Application::class);
     }
 
-    public function rt()
+    public function isRw()
     {
-        return $this->belongsTo(Rt::class);
+        return $this->role === 'rw';
     }
 
     public function isWarga()
@@ -79,9 +108,12 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    // ==========================================
+    // CEK KELENGKAPAN PROFIL WARGA
+    // ==========================================
+
     public function hasCompleteProfile()
     {
-        // Field yang wajib diisi untuk pengajuan surat
         $requiredFields = [
             'nik',
             'tempat_lahir',
@@ -94,6 +126,7 @@ class User extends Authenticatable
             'ktp_path',
             'kk_path',
             'rt_id',
+            'rw_id',
         ];
 
         foreach ($requiredFields as $field) {
@@ -119,9 +152,11 @@ class User extends Authenticatable
             'ktp_path' => 'Upload KTP',
             'kk_path' => 'Upload KK',
             'rt_id' => 'Pilih RT',
+            'rw_id' => 'Pilih RW',
         ];
 
         $missing = [];
+
         foreach ($requiredFields as $field => $label) {
             if (empty($this->$field)) {
                 $missing[] = $label;

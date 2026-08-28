@@ -147,6 +147,23 @@ public function notifyRt($rtPhone, $wargaName, $applicationNumber, $serviceName)
         return $this->sendText($staffPhone, $message);
     }
 
+    /**
+ * Kirim notifikasi ke RW (pengajuan baru)
+ */
+        /**
+ * Kirim notifikasi ke RW (pengajuan baru)
+ */
+        public function notifyRw($rwPhone, $wargaName, $applicationNumber, $serviceName)
+        {
+            $message = "📢 *Pengajuan Surat Baru!*\n\n";
+            $message .= "Dari: {$wargaName}\n";
+            $message .= "Nomor: {$applicationNumber}\n";
+            $message .= "Jenis: {$serviceName}\n\n";
+            $message .= "Silakan login ke SIPMAS untuk menyetujui atau menolak pengajuan.";
+
+            return $this->sendText($rwPhone, $message);
+        }
+
     
 
     // ... method lainnya (notifyRT, notifyStaff) ...

@@ -27,6 +27,21 @@
             <x-input-error class="mt-2" :messages="$errors->get('rt_id')" />
         </div>
 
+        {{-- pilih rw --}}
+        <div>
+            <x-input-label for="rw_id" :value="__('RW')" />
+            <select id="rw_id" name="rw_id"
+                class="mt-1 block w-full border-gray-300 focus:border-gama-accent focus:ring-gama-accent rounded-md shadow-sm">
+                <option value="">Pilih RW</option>
+                @foreach ($rws as $rt)
+                    <option value="{{ $rt->id }}" @selected(old('rw_id', $user->rw_id) == $rt->id)>
+                        {{ $rt->full_name }} {{ $rt->alamat ? '- ' . $rt->alamat : '' }}
+                    </option>
+                @endforeach
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('rw_id')" />
+        </div>
+
         <!-- Email -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
