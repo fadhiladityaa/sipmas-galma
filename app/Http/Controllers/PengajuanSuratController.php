@@ -242,6 +242,6 @@ class PengajuanSuratController extends Controller
             Log::error('Kirim WA ke RW gagal: ' . $e->getMessage());
         }
 
-        return redirect()->route('home')->with('success', 'Pengajuan berhasil dikirim dan menunggu persetujuan RT.');
+        return redirect()->route('warga.home')->with('success', 'Pengajuan berhasil dikirim dan menunggu persetujuan RT/RW.');
     }
 }

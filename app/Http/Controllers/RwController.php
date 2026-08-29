@@ -17,25 +17,20 @@ class RwController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-
-        // Akun RW terhubung ke tabel rws melalui rws.user_id
-        $rw = $user->rwProfile;
+        $rw = $user->rw; // Relasi: User → Rw
 
         if (!$rw) {
-            return redirect()->route('home')
+            return redirect()->route('rw.dashboard')
                 ->with('error', 'Data RW tidak ditemukan.');
         }
 
         $total = Application::where('rw_id', $rw->id)->count();
-
         $waiting = Application::where('rw_id', $rw->id)
             ->where('status', 'menunggu_rt')
             ->count();
-
         $approved = Application::where('rw_id', $rw->id)
             ->where('status', 'disetujui_rt')
             ->count();
-
         $rejected = Application::where('rw_id', $rw->id)
             ->where('status', 'ditolak_rt')
             ->count();
@@ -48,12 +43,7 @@ class RwController extends Controller
             ->get();
 
         return view('rw.dashboard', compact(
-            'rw',
-            'total',
-            'waiting',
-            'approved',
-            'rejected',
-            'recentApplications'
+            'rw', 'total', 'waiting', 'approved', 'rejected', 'recentApplications'
         ));
     }
 
@@ -62,10 +52,10 @@ class RwController extends Controller
      */
     public function applications()
     {
-        $rw = Auth::user()->rwProfile;
+        $rw = Auth::user()->rw;
 
         if (!$rw) {
-            return redirect()->route('home')
+            return redirect()->route('rw.dashboard')
                 ->with('error', 'Data RW tidak ditemukan.');
         }
 
@@ -82,10 +72,10 @@ class RwController extends Controller
      */
     public function detail($id)
     {
-        $rw = Auth::user()->rwProfile;
+        $rw = Auth::user()->rw;
 
         if (!$rw) {
-            return redirect()->route('home')
+            return redirect()->route('rw.dashboard')
                 ->with('error', 'Data RW tidak ditemukan.');
         }
 
@@ -101,10 +91,10 @@ class RwController extends Controller
      */
     public function approve($id)
     {
-        $rw = Auth::user()->rwProfile;
+        $rw = Auth::user()->rw;
 
         if (!$rw) {
-            return redirect()->route('home')
+            return redirect()->route('rw.dashboard')
                 ->with('error', 'Data RW tidak ditemukan.');
         }
 
@@ -117,51 +107,42 @@ class RwController extends Controller
         $application->rt_approved_by = Auth::id();
         $application->save();
 
+        // =============================================
+        // KIRIM NOTIFIKASI KE STAFF (WORKLOAD-BASED)
+        // =============================================
         try {
             $wa = app(WhatsAppService::class);
+            
+            // Hitung workload setiap staff
+            $staffList = User::where('role', 'staff')
+                ->withCount(['applications' => function($q) {
+                    $q->where('status', 'in_progress');
+                }])
+                ->orderBy('applications_count', 'asc')
+                ->get();
 
-            // ==========================================
-            // NOTIFIKASI STAFF
-            // ==========================================
+            // Pilih staff dengan workload paling rendah
+            $selectedStaff = $staffList->first();
 
-            $staffUsers = User::where('role', 'staff')->get();
-
-            foreach ($staffUsers as $staff) {
-                if ($staff->nomor_hp) {
-                    $wa->notifyStaff(
-                        $staff->nomor_hp,
-                        $application->user->name,
-                        $application->application_number,
-                        $application->service->name ?? 'Surat'
-                    );
-                }
-            }
-
-            // ==========================================
-            // NOTIFIKASI RT
-            // ==========================================
-
-            $rtUser = User::where('rt_id', $application->rt_id)
-                ->where('role', 'rt')
-                ->first();
-
-            if ($rtUser && $rtUser->nomor_hp) {
-                $wa->notifyRt(
-                    $rtUser->nomor_hp,
+            if ($selectedStaff && $selectedStaff->nomor_hp) {
+                $wa->notifyStaff(
+                    $selectedStaff->nomor_hp,
                     $application->user->name,
                     $application->application_number,
                     $application->service->name ?? 'Surat'
                 );
+                
+                Log::info('Staff dipilih berdasarkan workload (RW)', [
+                    'staff_id' => $selectedStaff->id,
+                    'workload' => $selectedStaff->applications_count
+                ]);
             }
 
         } catch (\Exception $e) {
-            Log::error(
-                'Kirim WA gagal: ' . $e->getMessage()
-            );
+            Log::error('Kirim WA ke Staff gagal: ' . $e->getMessage());
         }
 
-        return redirect()
-            ->route('rw.dashboard')
+        return redirect()->route('rw.dashboard')
             ->with('success', '✅ Pengajuan berhasil disetujui.');
     }
 
@@ -174,10 +155,10 @@ class RwController extends Controller
             'reason' => 'required|string|max:500',
         ]);
 
-        $rw = Auth::user()->rwProfile;
+        $rw = Auth::user()->rw;
 
         if (!$rw) {
-            return redirect()->route('home')
+            return redirect()->route('rw.dashboard')
                 ->with('error', 'Data RW tidak ditemukan.');
         }
 
@@ -189,8 +170,7 @@ class RwController extends Controller
         $application->rt_rejection_reason = $request->reason;
         $application->save();
 
-        return redirect()
-            ->route('rw.dashboard')
+        return redirect()->route('rw.dashboard')
             ->with('success', '❌ Pengajuan berhasil ditolak.');
     }
 }

@@ -138,7 +138,7 @@ public function notifyRt($rtPhone, $wargaName, $applicationNumber, $serviceName)
  */
     public function notifyStaff($staffPhone, $wargaName, $applicationNumber, $serviceName)
     {
-        $message = "📢 *Pengajuan Telah Disetujui RT!*\n\n";
+        $message = "📢 *Pengajuan Telah Disetujui RT/RW!*\n\n";
         $message .= "Pemohon: {$wargaName}\n";
         $message .= "Nomor: {$applicationNumber}\n";
         $message .= "Jenis: {$serviceName}\n\n";

@@ -11,6 +11,7 @@
                         </ul>
                     </div>
                 @endif
+
                 <h1 class="text-2xl font-bold text-gama-text">
                     {{ isset($service) ? 'Form Pengajuan: ' . $service->name : 'Form Pengajuan (Lainnya)' }}
                 </h1>
@@ -19,7 +20,8 @@
                 </p>
             </div>
 
-            <form method="POST" action="{{ route('pengajuan.store') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('warga.pengajuan.store') }}" enctype="multipart/form-data"
+                id="pengajuanForm">
                 @csrf
 
                 <!-- Hidden untuk service_id -->
@@ -29,7 +31,7 @@
                     <input type="hidden" name="service_id" value="">
                 @endif
 
-                <!-- Informasi Data Pribadi (read-only) -->
+                <!-- Informasi Data Pribadi -->
                 <div class="bg-gama-bg/50 rounded-lg p-4 mb-6">
                     <h3 class="text-sm font-medium text-gama-text mb-2">Data Pribadi</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
@@ -42,8 +44,7 @@
                     </div>
                 </div>
 
-                <!-- Field Dinamis dari definisi service -->
-                <!-- Field Dinamis dari definisi service -->
+                <!-- Field Dinamis -->
                 @if (isset($service) && $service->fields)
                     @foreach (json_decode($service->fields, true) as $field)
                         <div class="mb-4">
@@ -97,7 +98,7 @@
                     </div>
                 @endif
 
-                <!-- Catatan (opsional) -->
+                <!-- Catatan -->
                 <div class="mb-4">
                     <label for="notes" class="block text-sm font-medium text-gama-text">Catatan (opsional)</label>
                     <textarea name="notes" id="notes" rows="3"
@@ -105,8 +106,9 @@
                         placeholder="Tambahkan keterangan jika diperlukan"></textarea>
                 </div>
 
-                <!-- Dokumen Pendukung -->
-                <!-- Dokumen Pendukung (dari Profil) -->
+                <!-- ============================================= -->
+                <!-- DOKUMEN PENDUKUNG (DENGAN PREVIEW)            -->
+                <!-- ============================================= -->
                 <div class="mb-6">
                     <h3 class="text-sm font-medium text-gama-text mb-3">Dokumen Pendukung</h3>
 
@@ -140,7 +142,6 @@
                                 </a>
                             @endif
                         </div>
-                        <!-- Hidden input untuk mengirimkan path KTP -->
                         <input type="hidden" name="ktp_path" value="{{ Auth::user()->ktp_path }}">
                     </div>
 
@@ -177,7 +178,7 @@
                         <input type="hidden" name="kk_path" value="{{ Auth::user()->kk_path }}">
                     </div>
 
-                    <!-- Catatan jika ada dokumen lain yang diperlukan -->
+                    <!-- Catatan -->
                     @if (isset($service) && $service->id)
                         <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                             <p class="text-xs text-yellow-700">
@@ -192,80 +193,89 @@
                     @endif
                 </div>
 
-                <!-- Modal Preview KTP -->
-                <div id="ktp-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center"
-                    onclick="closePreview('ktp-modal')">
-                    <div class="bg-white rounded-lg p-4 max-w-lg max-h-[90vh] overflow-auto"
-                        onclick="event.stopPropagation()">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="text-lg font-semibold">Preview KTP</h3>
-                            <button onclick="closePreview('ktp-modal')" class="text-gray-500 hover:text-gray-700">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        @if (Auth::user()->ktp_path)
-                            <img src="{{ asset('storage/' . Auth::user()->ktp_path) }}" alt="KTP"
-                                class="w-full h-auto rounded">
-                        @else
-                            <p class="text-center text-gray-500 py-8">Belum ada KTP</p>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Modal Preview KK -->
-                <div id="kk-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center"
-                    onclick="closePreview('kk-modal')">
-                    <div class="bg-white rounded-lg p-4 max-w-lg max-h-[90vh] overflow-auto"
-                        onclick="event.stopPropagation()">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="text-lg font-semibold">Preview KK</h3>
-                            <button onclick="closePreview('kk-modal')" class="text-gray-500 hover:text-gray-700">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        @if (Auth::user()->kk_path)
-                            <img src="{{ asset('storage/' . Auth::user()->kk_path) }}" alt="KK"
-                                class="w-full h-auto rounded">
-                        @else
-                            <p class="text-center text-gray-500 py-8">Belum ada KK</p>
-                        @endif
-                    </div>
-                </div>
-
-                <script>
-                    function previewKTP() {
-                        document.getElementById('ktp-modal').classList.remove('hidden');
-                        document.getElementById('ktp-modal').classList.add('flex');
-                    }
-
-                    function previewKK() {
-                        document.getElementById('kk-modal').classList.remove('hidden');
-                        document.getElementById('kk-modal').classList.add('flex');
-                    }
-
-                    function closePreview(id) {
-                        document.getElementById(id).classList.add('hidden');
-                        document.getElementById(id).classList.remove('flex');
-                    }
-                </script>
-
-
-                <!-- Tombol submit -->
+                <!-- ============================================= -->
+                <!-- SUBMIT BUTTON                                -->
+                <!-- ============================================= -->
                 <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <a href="{{ route('pengajuan-surat') }}"
+                    <a href="{{ route('warga.pengajuan-surat') }}"
                         class="text-sm text-gama-gray hover:text-gama-primary transition">← Kembali</a>
-                    <button type="submit"
-                        class="px-6 py-2.5 bg-gama-primary hover:bg-[#1f3320] text-white font-medium rounded-lg transition shadow-sm hover:shadow">
+                    <button type="submit" id="submitBtn"
+                        class="px-6 py-2.5 bg-gama-primary hover:bg-[#1f3320] text-white font-medium rounded-lg transition shadow-sm hover:shadow"
+                        onclick="this.disabled=true; this.innerHTML='⏳ Mengirim...'; this.form.submit();">
                         Kirim Pengajuan
                     </button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- ============================================= -->
+    <!-- MODAL PREVIEW KTP                             -->
+    <!-- ============================================= -->
+    <div id="ktp-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center"
+        onclick="closePreview('ktp-modal')">
+        <div class="bg-white rounded-2xl max-w-lg w-full mx-4 p-6 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gama-text">Preview KTP</h3>
+                <button onclick="closePreview('ktp-modal')" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex items-center justify-center min-h-[200px]">
+                @if (Auth::user()->ktp_path)
+                    <img src="{{ asset('storage/' . Auth::user()->ktp_path) }}" alt="KTP"
+                        class="w-full h-auto rounded-lg max-h-[500px] object-contain">
+                @else
+                    <p class="text-gama-gray">Belum ada KTP</p>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- MODAL PREVIEW KK                              -->
+    <!-- ============================================= -->
+    <div id="kk-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center"
+        onclick="closePreview('kk-modal')">
+        <div class="bg-white rounded-2xl max-w-lg w-full mx-4 p-6 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gama-text">Preview KK</h3>
+                <button onclick="closePreview('kk-modal')" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex items-center justify-center min-h-[200px]">
+                @if (Auth::user()->kk_path)
+                    <img src="{{ asset('storage/' . Auth::user()->kk_path) }}" alt="KK"
+                        class="w-full h-auto rounded-lg max-h-[500px] object-contain">
+                @else
+                    <p class="text-gama-gray">Belum ada KK</p>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- JAVASCRIPT                                    -->
+    <!-- ============================================= -->
+    <script>
+        function previewKTP() {
+            document.getElementById('ktp-modal').classList.remove('hidden');
+            document.getElementById('ktp-modal').classList.add('flex');
+        }
+
+        function previewKK() {
+            document.getElementById('kk-modal').classList.remove('hidden');
+            document.getElementById('kk-modal').classList.add('flex');
+        }
+
+        function closePreview(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        }
+    </script>
 </x-app-layout>

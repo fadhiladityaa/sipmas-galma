@@ -22,27 +22,18 @@
             <div class="flex items-center space-x-6 text-slate-400">
 
                 {{-- navigasi warga --}}
-
                 @auth
                     @if (Auth::user()->role == 'warga')
                         <a href="{{ route('warga.home') }}"
                             class="nav-link {{ request()->routeIs('warga.home*') ? 'text-white' : '' }}">
                             <span>Home</span>
                         </a>
-                    @endif
-                @endauth
 
-                @auth
-                    @if (Auth::user()->role == 'warga')
                         <a href="{{ route('warga.pengajuan-surat') }}"
                             class="nav-link {{ request()->routeIs('warga.pengajuan-surat*') ? 'text-white' : '' }}">
                             <span>Pengajuan</span>
                         </a>
-                    @endif
-                @endauth
 
-                @auth
-                    @if (Auth::user()->role == 'warga')
                         <a href="{{ route('warga.riwayat') }}"
                             class="nav-link {{ request()->routeIs('warga.riwayat*') ? 'text-white' : '' }}">
                             <span>Riwayat</span>
@@ -58,13 +49,25 @@
                             class="nav-link {{ request()->routeIs('rt.dashboard*') ? 'text-white' : '' }}">
                             <span>Dashboard</span>
                         </a>
-                    @endif
-                @endauth
 
-                @auth
-                    @if (Auth::user()->role == 'rt')
                         <a href="{{ route('rt.applications') }}"
                             class="nav-link {{ request()->routeIs('rt.applications*') ? 'text-white' : '' }}">
+                            <span>Daftar Pengajuan</span>
+                        </a>
+                    @endif
+                @endauth
+                {{-- end navigasi rt --}}
+
+                {{-- navigasi rw --}}
+                @auth
+                    @if (Auth::user()->role == 'rw')
+                        <a href="{{ route('rw.dashboard') }}"
+                            class="nav-link {{ request()->routeIs('rw.dashboard*') ? 'text-white' : '' }}">
+                            <span>Dashboard</span>
+                        </a>
+
+                        <a href="{{ route('rt.applications') }}"
+                            class="nav-link {{ request()->routeIs('rw.applications*') ? 'text-white' : '' }}">
                             <span>Daftar Pengajuan</span>
                         </a>
                     @endif
@@ -78,20 +81,12 @@
                             class="nav-link {{ request()->routeIs('staff.dashboard*') ? 'text-white' : '' }}">
                             <span>Dashboard</span>
                         </a>
-                    @endif
-                @endauth
 
-                @auth
-                    @if (Auth::user()->role == 'staff')
                         <a href="{{ route('staff.applications') }}"
                             class="nav-link {{ request()->routeIs('staff.applications*') ? 'text-white' : '' }}">
                             <span>Pengajuan</span>
                         </a>
-                    @endif
-                @endauth
 
-                @auth
-                    @if (Auth::user()->role == 'staff')
                         <a href="{{ route('staff.riwayat') }}"
                             class="nav-link {{ request()->routeIs('staff.riwayat*') ? 'text-white' : '' }}">
                             <span>Riwayat Pengajuan</span>
@@ -179,33 +174,105 @@
 <div
     class="lg:hidden fixed bottom-0 left-0 text-slate-300 right-0 bg-gama-primary border-t-2 border-gama-gold/40 shadow-lg shadow-gama-primary/20 z-50">
     <div class="flex items-center justify-around h-16 px-2">
-        <!-- Ajukan Surat -->
-        <a href="{{ route('warga.home') }}"
-            class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('home') ? 'active' : '' }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            <span class="text-[10px] font-medium">Ajukan Surat</span>
-        </a>
-        <!-- Riwayat -->
-        <a href="{{ route('warga.riwayat') }}"
-            class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('warga.riwayat*') ? 'active' : '' }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span class="text-[10px] font-medium">Riwayat</span>
-        </a>
+        {{-- mobile navbar warga --}}
+        @auth
+            @if (Auth::user()->role == 'warga')
+                <a href="{{ route('warga.home') }}"
+                    class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('home') ? 'active' : '' }}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span class="text-[10px] font-medium">Ajukan Surat</span>
+                </a>
 
-        <!-- Profile -->
-        <a href="{{ route('profile.edit') }}"
-            class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('profile*') ? 'active' : '' }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            <span class="text-[10px] font-medium">Profile</span>
-        </a>
+                <a href="{{ route('warga.riwayat') }}"
+                    class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('warga.riwayat*') ? 'active' : '' }}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="text-[10px] font-medium">Riwayat</span>
+                </a>
+
+                <a href="{{ route('profile.edit') }}"
+                    class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('profile*') ? 'active' : '' }}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span class="text-[10px] font-medium">Profile</span>
+                </a>
+            @endif
+        @endauth
+        {{-- end mobile navbar warga --}}
+
+        {{-- navbar RT --}}
+        @auth
+            @if (Auth::user()->role == 'rt')
+                <a href="{{ route('rt.dashboard') }}"
+                    class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('rt.dashboard') ? 'active' : '' }}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    <span class="text-[10px] font-medium">Dashboard</span>
+                </a>
+
+                <a href="{{ route('rt.applications') }}"
+                    class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('rt.applications*') ? 'active' : '' }}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                    <span class="text-[10px] font-medium">Pengajuan Warga</span>
+                </a>
+
+
+                <a href="{{ route('profile.edit') }}"
+                    class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('profile*') ? 'active' : '' }}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span class="text-[10px] font-medium">Profile</span>
+                </a>
+            @endif
+        @endauth
+        {{-- end navbar RT --}}
+
+        {{-- navbar RW --}}
+        @auth
+            @if (Auth::user()->role == 'rw')
+                <a href="{{ route('rw.dashboard') }}"
+                    class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('rw.dashboard') ? 'active' : '' }}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    <span class="text-[10px] font-medium">Dashboard</span>
+                </a>
+
+                <a href="{{ route('rw.applications') }}"
+                    class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('rt.applications*') ? 'active' : '' }}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                    <span class="text-[10px] font-medium">Pengajuan Warga</span>
+                </a>
+
+
+                <a href="{{ route('profile.edit') }}"
+                    class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('profile*') ? 'active' : '' }}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span class="text-[10px] font-medium">Profile</span>
+                </a>
+            @endif
+        @endauth
+        {{-- end navbar RT --}}
     </div>
 </div>
 

@@ -18,7 +18,7 @@ class RtController extends Controller
         $rt = $user->rt;
 
         if (!$rt) {
-            return redirect()->route('home')->with('error', 'Data RT tidak ditemukan. Silakan hubungi admin.');
+            return redirect()->route('rt.dashboard')->with('error', 'Data RT tidak ditemukan. Silakan hubungi admin.');
         }
 
         $total = Application::where('rt_id', $rt->id)->count();
@@ -77,29 +77,41 @@ class RtController extends Controller
         // =============================================
         // KIRIM NOTIFIKASI KE STAFF
         // =============================================
-        try {
+         try {
             $wa = app(WhatsAppService::class);
             
-            // Ambil semua user dengan role staff
-            $staffUsers = User::where('role', 'staff')->get();
-            
-            foreach ($staffUsers as $staff) {
-                if ($staff->nomor_hp) {
-                    $wa->notifyStaff(
-                        $staff->nomor_hp,
-                        $application->user->name,
-                        $application->application_number,
-                        $application->service->name ?? 'Surat'
-                    );
-                }
+            // Hitung workload setiap staff
+            $staffList = User::where('role', 'staff')
+                ->withCount(['applications' => function($q) {
+                    $q->where('status', 'in_progress');
+                }])
+                ->orderBy('applications_count', 'asc')
+                ->get();
+
+            // Pilih staff dengan workload paling rendah
+            $selectedStaff = $staffList->first();
+
+            if ($selectedStaff && $selectedStaff->nomor_hp) {
+                $wa->notifyStaff(
+                    $selectedStaff->nomor_hp,
+                    $application->user->name,
+                    $application->application_number,
+                    $application->service->name ?? 'Surat'
+                );
+                
+                Log::info('Staff dipilih berdasarkan workload', [
+                    'staff_id' => $selectedStaff->id,
+                    'workload' => $selectedStaff->applications_count
+                ]);
             }
+
         } catch (\Exception $e) {
             Log::error('Kirim WA ke Staff gagal: ' . $e->getMessage());
         }
 
-        return redirect()->route('rt.dashboard')
-            ->with('success', '✅ Pengajuan berhasil disetujui.');
-    }
+            return redirect()->route('rt.dashboard')
+                ->with('success', '✅ Pengajuan berhasil disetujui.');
+        }
 
     public function reject(Request $request, $id)
     {
