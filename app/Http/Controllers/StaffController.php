@@ -304,6 +304,40 @@ class StaffController extends Controller
         ->with('success', '✅ Surat berhasil diterbitkan.');
 }
 
+/**
+ * Halaman Riwayat Pengajuan (Staff)
+ */
+    public function riwayat(Request $request)
+    {
+        $query = Application::with(['user', 'service'])
+            ->whereIn('status', ['issued', 'rejected']);
+
+        // Filter berdasarkan jenis surat
+        if ($request->has('service_id') && $request->service_id != '') {
+            $query->where('service_id', $request->service_id);
+        }
+
+        // Filter berdasarkan status
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        // Filter berdasarkan tanggal
+        if ($request->has('date_from') && $request->date_from != '') {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && $request->date_to != '') {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $applications = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        // Untuk filter dropdown
+        $services = Service::where('is_active', true)->get();
+
+        return view('staff.riwayat', compact('applications', 'services'));
+    }
+
     /**
      * Tolak Pengajuan
      */

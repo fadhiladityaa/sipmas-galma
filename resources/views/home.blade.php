@@ -20,7 +20,7 @@
                     </p>
                 </div>
                 <div class="mt-4 md:mt-0 flex-shrink-0">
-                    <a href="{{ route('pengajuan-surat') }}"
+                    <a href="{{ route('warga.pengajuan-surat') }}"
                         class="inline-flex items-center px-5 py-2.5 bg-gama-primary hover:bg-[#1f3320] text-white font-medium rounded-lg transition shadow-sm hover:shadow">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             stroke-width="2">

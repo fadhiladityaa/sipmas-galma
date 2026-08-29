@@ -47,7 +47,7 @@ class RtController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('rt.applications', compact('applications'));
+        return view('rt.application', compact('applications'));
     }
 
     public function detail($id)

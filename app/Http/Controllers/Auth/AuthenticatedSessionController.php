@@ -42,8 +42,9 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('staff.applications'));
         }
 
-        // Default: warga ke home
-        return redirect()->intended(route('home'));
+        if ($user->role === 'warga') {
+            return redirect()->intended(route('warga.home'));
+        }
     }
 
     /**

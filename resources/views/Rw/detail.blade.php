@@ -142,19 +142,47 @@
                             </h3>
                             <div class="bg-gama-bg/60 rounded-xl p-4 border border-gray-100">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    @foreach ($application->documents as $doc)
-                                        <div
-                                            class="flex items-center gap-2 bg-white/70 rounded-lg px-3 py-2 border border-gray-100">
+                                    <!-- KTP -->
+                                    <div
+                                        class="flex items-center justify-between bg-white/70 rounded-lg px-3 py-2 border border-gray-100">
+                                        <div class="flex items-center gap-2">
                                             <svg class="w-4 h-4 text-gama-accent flex-shrink-0" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                             </svg>
-                                            <span class="text-sm text-gama-text">{{ $doc->label ?? 'Dokumen' }}</span>
-                                            <span
-                                                class="text-xs text-gama-gray ml-auto">{{ $doc->is_reused ? '📎 Reused' : '📤 Baru' }}</span>
+                                            <span class="text-sm text-gama-text">KTP</span>
                                         </div>
-                                    @endforeach
+                                        @if ($application->user->ktp_path)
+                                            <button type="button" onclick="previewKTP()"
+                                                class="text-sm text-gama-accent hover:text-gama-primary transition">
+                                                Lihat
+                                            </button>
+                                        @else
+                                            <span class="text-xs text-gama-gray">Tidak ada</span>
+                                        @endif
+                                    </div>
+
+                                    <!-- KK -->
+                                    <div
+                                        class="flex items-center justify-between bg-white/70 rounded-lg px-3 py-2 border border-gray-100">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-gama-accent flex-shrink-0" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                            </svg>
+                                            <span class="text-sm text-gama-text">KK</span>
+                                        </div>
+                                        @if ($application->user->kk_path)
+                                            <button type="button" onclick="previewKK()"
+                                                class="text-sm text-gama-accent hover:text-gama-primary transition">
+                                                Lihat
+                                            </button>
+                                        @else
+                                            <span class="text-xs text-gama-gray">Tidak ada</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -263,5 +291,66 @@
             document.getElementById('rejectModal').classList.add('hidden');
             document.getElementById('rejectModal').classList.remove('flex');
         }
+
+        function previewKTP() {
+            document.getElementById('ktp-modal').classList.remove('hidden');
+            document.getElementById('ktp-modal').classList.add('flex');
+        }
+
+        function previewKK() {
+            document.getElementById('kk-modal').classList.remove('hidden');
+            document.getElementById('kk-modal').classList.add('flex');
+        }
+
+        function closePreview(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        }
     </script>
+
+    <!-- Modal Preview KTP -->
+    <div id="ktp-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center"
+        onclick="closePreview('ktp-modal')">
+        <div class="bg-white rounded-2xl max-w-lg w-full mx-4 p-6 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gama-text">Preview KTP</h3>
+                <button onclick="closePreview('ktp-modal')" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex items-center justify-center min-h-[200px]">
+                @if ($application->user->ktp_path)
+                    <img src="{{ asset('storage/' . $application->user->ktp_path) }}" alt="KTP"
+                        class="w-full h-auto rounded-lg max-h-[500px] object-contain">
+                @else
+                    <p class="text-gama-gray">Belum ada KTP</p>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Preview KK -->
+    <div id="kk-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center"
+        onclick="closePreview('kk-modal')">
+        <div class="bg-white rounded-2xl max-w-lg w-full mx-4 p-6 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gama-text">Preview KK</h3>
+                <button onclick="closePreview('kk-modal')" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex items-center justify-center min-h-[200px]">
+                @if ($application->user->kk_path)
+                    <img src="{{ asset('storage/' . $application->user->kk_path) }}" alt="KK"
+                        class="w-full h-auto rounded-lg max-h-[500px] object-contain">
+                @else
+                    <p class="text-gama-gray">Belum ada KK</p>
+                @endif
+            </div>
+        </div>
+    </div>
 </x-app-layout>

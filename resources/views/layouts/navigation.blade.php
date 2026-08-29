@@ -19,14 +19,87 @@
             </div>
 
             <!-- Menu desktop (DENGAN INDIKATOR AKTIF) -->
-            <div class="flex items-center space-x-6 text-slate-300">
-                <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'text-white' : '' }}">
-                    <span>Ajukan Surat</span>
-                </a>
-                <a href="{{ route('warga.riwayat') }}"
-                    class="nav-link {{ request()->routeIs('warga.riwayat*') ? 'text-white' : '' }}">
-                    <span>Riwayat</span>
-                </a>
+            <div class="flex items-center space-x-6 text-slate-400">
+
+                {{-- navigasi warga --}}
+
+                @auth
+                    @if (Auth::user()->role == 'warga')
+                        <a href="{{ route('warga.home') }}"
+                            class="nav-link {{ request()->routeIs('warga.home*') ? 'text-white' : '' }}">
+                            <span>Home</span>
+                        </a>
+                    @endif
+                @endauth
+
+                @auth
+                    @if (Auth::user()->role == 'warga')
+                        <a href="{{ route('warga.pengajuan-surat') }}"
+                            class="nav-link {{ request()->routeIs('warga.pengajuan-surat*') ? 'text-white' : '' }}">
+                            <span>Pengajuan</span>
+                        </a>
+                    @endif
+                @endauth
+
+                @auth
+                    @if (Auth::user()->role == 'warga')
+                        <a href="{{ route('warga.riwayat') }}"
+                            class="nav-link {{ request()->routeIs('warga.riwayat*') ? 'text-white' : '' }}">
+                            <span>Riwayat</span>
+                        </a>
+                    @endif
+                @endauth
+                {{-- end navigasi warga --}}
+
+                {{-- navigasi rt --}}
+                @auth
+                    @if (Auth::user()->role == 'rt')
+                        <a href="{{ route('rt.dashboard') }}"
+                            class="nav-link {{ request()->routeIs('rt.dashboard*') ? 'text-white' : '' }}">
+                            <span>Dashboard</span>
+                        </a>
+                    @endif
+                @endauth
+
+                @auth
+                    @if (Auth::user()->role == 'rt')
+                        <a href="{{ route('rt.applications') }}"
+                            class="nav-link {{ request()->routeIs('rt.applications*') ? 'text-white' : '' }}">
+                            <span>Daftar Pengajuan</span>
+                        </a>
+                    @endif
+                @endauth
+                {{-- end navigasi rt --}}
+
+                {{-- navigasi staff --}}
+                @auth
+                    @if (Auth::user()->role == 'staff')
+                        <a href="{{ route('staff.dashboard') }}"
+                            class="nav-link {{ request()->routeIs('staff.dashboard*') ? 'text-white' : '' }}">
+                            <span>Dashboard</span>
+                        </a>
+                    @endif
+                @endauth
+
+                @auth
+                    @if (Auth::user()->role == 'staff')
+                        <a href="{{ route('staff.applications') }}"
+                            class="nav-link {{ request()->routeIs('staff.applications*') ? 'text-white' : '' }}">
+                            <span>Pengajuan</span>
+                        </a>
+                    @endif
+                @endauth
+
+                @auth
+                    @if (Auth::user()->role == 'staff')
+                        <a href="{{ route('staff.riwayat') }}"
+                            class="nav-link {{ request()->routeIs('staff.riwayat*') ? 'text-white' : '' }}">
+                            <span>Riwayat Pengajuan</span>
+                        </a>
+                    @endif
+                @endauth
+                {{-- end navigasi staff --}}
+
             </div>
 
             <!-- Profile desktop -->
@@ -107,7 +180,7 @@
     class="lg:hidden fixed bottom-0 left-0 text-slate-300 right-0 bg-gama-primary border-t-2 border-gama-gold/40 shadow-lg shadow-gama-primary/20 z-50">
     <div class="flex items-center justify-around h-16 px-2">
         <!-- Ajukan Surat -->
-        <a href="{{ route('home') }}"
+        <a href="{{ route('warga.home') }}"
             class="bottom-nav-link flex flex-col items-center space-y-0.5 {{ request()->routeIs('home') ? 'active' : '' }}">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />

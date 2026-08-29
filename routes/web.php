@@ -15,17 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/pengajuan-surat', [PengajuanSuratController::class, 'index'])->name('pengajuan-surat');
-    Route::get('/pengajuan-surat/create/{serviceId?}', [PengajuanSuratController::class, 'create'])->name('pengajuan.create');
-    Route::post('/pengajuan-surat/store', [PengajuanSuratController::class, 'store'])->name('pengajuan.store');
-});
-
-Route::get('/home', function () {
-    return view('home', ['title' => 'Home']);
-})->middleware(['auth', 'verified'])->name('home');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -59,6 +48,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::post('/applications/{id}/upload-surat', [StaffController::class, 'uploadSurat'])->name('application.upload-surat');
     Route::post('/applications/{id}/terbitkan', [StaffController::class, 'terbitkan'])->name('application.terbitkan');
     Route::post('/applications/{id}/reject', [StaffController::class, 'reject'])->name('application.reject');
+    Route::get('/riwayat', [StaffController::class, 'riwayat'])->name('riwayat');
 });
 
 // Admin Routes
@@ -70,12 +60,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:warga'])->prefix('warga')->name('warga.')->group(function () {
     // Halaman riwayat (daftar semua pengajuan)
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
-    
     // Halaman tracking/detail pengajuan (pakai {id})
     Route::get('/riwayat/{id}', [RiwayatController::class, 'tracking'])->name('riwayat.tracking');
-    
     // Download PDF surat (pakai {id}/download)
     Route::get('/riwayat/{id}/download', [RiwayatController::class, 'download'])->name('riwayat.download');
+    Route::get('/pengajuan-surat', [PengajuanSuratController::class, 'index'])->name('pengajuan-surat');
+    Route::get('/pengajuan-surat/create/{serviceId?}', [PengajuanSuratController::class, 'create'])->name('pengajuan.create');
+    Route::post('/pengajuan-surat/store', [PengajuanSuratController::class, 'store'])->name('pengajuan.store');
+    Route::get('/home', [PengajuanSuratController::class, 'home'])->name('home');
 });
 
 

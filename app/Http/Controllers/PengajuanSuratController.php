@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class PengajuanSuratController extends Controller
 {
+        
     // Menampilkan daftar jenis surat
     public function index()
     {
@@ -47,6 +48,11 @@ class PengajuanSuratController extends Controller
         }
 
         return redirect()->route('pengajuan-surat');
+    }
+
+     public function home()
+    {
+        return view('home');
     }
 
     public function store(Request $request)

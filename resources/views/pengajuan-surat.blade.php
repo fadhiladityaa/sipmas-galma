@@ -34,7 +34,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @forelse ($services as $service)
-                    <a href="{{ route('pengajuan.create', $service->id) }}"
+                    <a href="{{ route('warga.pengajuan.create', $service->id) }}"
                         class="block p-4 border border-gray-200 rounded-xl hover:shadow-md hover:border-gama-accent transition group">
                         <div class="flex items-start">
                             <div
@@ -60,7 +60,7 @@
                 @endforelse
 
                 <!-- Opsi Lainnya -->
-                <a href="{{ route('pengajuan.create', ['custom' => true]) }}"
+                <a href="{{ route('warga.pengajuan.create', ['custom' => true]) }}"
                     class="block p-4 border border-dashed border-gray-300 rounded-xl hover:border-gama-accent hover:bg-gama-bg/50 transition group">
                     <div class="flex items-start">
                         <div
@@ -81,7 +81,7 @@
             </div>
 
             <div class="mt-8 pt-4 border-t border-gray-100">
-                <a href="{{ route('home') }}"
+                <a href="{{ route('warga.home') }}"
                     class="inline-flex items-center text-sm text-gama-gray hover:text-gama-primary transition">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
