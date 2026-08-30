@@ -66,7 +66,7 @@
                             <span>Dashboard</span>
                         </a>
 
-                        <a href="{{ route('rt.applications') }}"
+                        <a href="{{ route('rw.applications') }}"
                             class="nav-link {{ request()->routeIs('rw.applications*') ? 'text-white' : '' }}">
                             <span>Daftar Pengajuan</span>
                         </a>
