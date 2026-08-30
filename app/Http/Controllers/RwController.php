@@ -64,7 +64,7 @@ class RwController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('rw.applications', compact('applications'));
+        return view('Rw.applications', compact('applications'));
     }
 
     /**
@@ -83,7 +83,7 @@ class RwController extends Controller
             ->with(['user', 'service', 'documents'])
             ->findOrFail($id);
 
-        return view('rw.detail', compact('application'));
+        return view('Rw.detail', compact('application'));
     }
 
     /**
