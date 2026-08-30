@@ -42,7 +42,7 @@ class RwController extends Controller
             ->limit(5)
             ->get();
 
-        return view('rw.dashboard', compact(
+        return view('Rw.dashboard', compact(
             'rw', 'total', 'waiting', 'approved', 'rejected', 'recentApplications'
         ));
     }
