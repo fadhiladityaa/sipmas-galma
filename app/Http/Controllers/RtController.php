@@ -18,7 +18,7 @@ class RtController extends Controller
         $rt = $user->rt;
 
         if (!$rt) {
-            return redirect()->route('rt.dashboard')->with('error', 'Data RT tidak ditemukan. Silakan hubungi admin.');
+            return redirect()->route('Rt.dashboard')->with('error', 'Data RT tidak ditemukan. Silakan hubungi admin.');
         }
 
         $total = Application::where('rt_id', $rt->id)->count();
