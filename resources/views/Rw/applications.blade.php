@@ -34,7 +34,7 @@
                                     </td>
                                     <td class="px-4 py-3">{{ $app->created_at->format('d/m/Y H:i') }}</td>
                                     <td class="px-4 py-3 text-center">
-                                        <a href="{{ route('rt.application.detail', $app->id) }}"
+                                        <a href="{{ route('rw.application.detail', $app->id) }}"
                                             class="text-gama-accent hover:text-gama-primary text-sm">
                                             Detail
                                         </a>
