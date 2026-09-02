@@ -76,7 +76,7 @@
                             </div>
                             <div>
                                 <h4 class="text-white font-semibold">10+ Jenis Surat</h4>
-                                <p class="text-white/60 text-sm">Domisili, Tidak Mampu, SKCK, dan lainnya</p>
+                                <p class="text-white/60 text-sm">Tempat tinggal, Tidak Mampu, SKCK, dan lainnya</p>
                             </div>
                         </div>
                         <!-- Card 2 -->
