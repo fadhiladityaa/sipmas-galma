@@ -58,7 +58,7 @@ class RtController extends Controller
             ->with(['user', 'service', 'documents'])
             ->findOrFail($id);
 
-        return view('rt.detail', compact('application'));
+        return view('Rt.detail', compact('application'));
     }
 
     public function approve($id)
