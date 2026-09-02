@@ -40,7 +40,7 @@
                                     <p class="text-sm text-gama-gray">{{ $app->service->name }} •
                                         {{ $app->application_number }}</p>
                                 </div>
-                                <a href="{{ route('rt.application.detail', $app->id) }}"
+                                <a href="{{ route('rt.applications.detail', $app->id) }}"
                                     class="px-4 py-2 bg-gama-primary text-white rounded-lg text-sm hover:bg-[#1f3320] transition">
                                     Proses
                                 </a>
