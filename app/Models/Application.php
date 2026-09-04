@@ -30,6 +30,12 @@ class Application extends Model
 
     protected $casts = [
         'data' => 'array',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'submitted_at' => 'datetime',
+        'processed_at' => 'datetime',
+        'issued_at' => 'datetime',
+        'rt_approved_at' => 'datetime',
     ];
 
     // Relasi
