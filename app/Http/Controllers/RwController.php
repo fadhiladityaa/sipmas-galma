@@ -170,6 +170,24 @@ class RwController extends Controller
         $application->rt_rejection_reason = $request->reason;
         $application->save();
 
+        try {
+            $wa = app(WhatsAppService::class);
+            
+            $phoneNumber = $application->user->nomor_hp;
+            $serviceName = $application->service->name ?? 'Surat';
+            
+            if ($phoneNumber) {
+                $wa->notifyRejectToWarga(
+                    $phoneNumber,
+                    $application->application_number,
+                    $serviceName,
+                    $request->reason
+                );
+            }
+        } catch (\Exception $e) {
+            Log::error('Kirim WA tolak ke warga gagal: ' . $e->getMessage());
+        }
+
         return redirect()->route('rw.dashboard')
             ->with('success', '❌ Pengajuan berhasil ditolak.');
     }
