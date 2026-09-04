@@ -46,7 +46,9 @@ class Application extends Model
 
     public function service()
     {
-        return $this->belongsTo(Service::class);
+          return $this->belongsTo(Service::class)->withDefault([
+            'name' => 'Lainnya',
+         ]);
     }
 
     public function staff()
