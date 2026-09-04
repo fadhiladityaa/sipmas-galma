@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendWhatsAppJob;
 use App\Models\Application;
 use App\Models\Letter;
 use App\Models\Service;
@@ -10,7 +11,7 @@ use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use App\Jobs\SendWhatsAppJob;
+use Illuminate\Support\Facades\Storage;
 
 class StaffController extends Controller
 {
