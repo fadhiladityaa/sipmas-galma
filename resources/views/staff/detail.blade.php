@@ -137,7 +137,7 @@
                                                 Lihat
                                             </button>
                                             <a href="{{ route('staff.download.dokumen', ['id' => $application->id, 'type' => 'ktp']) }}"
-                                                class="px-3 py-1.5 text-sm bg-blue-500/10 text-blue-600 hover:bg-blue-500 hover:text-white rounded-lg transition">
+                                                class="px-3 py-1.5 text-sm bg-gama-primary/10 text-gama-primary hover:bg-gama-primary hover:text-white rounded-lg transition">
                                                 Download
                                             </a>
                                         </div>
@@ -172,7 +172,7 @@
                                                 Lihat
                                             </button>
                                             <a href="{{ route('staff.download.dokumen', ['id' => $application->id, 'type' => 'kk']) }}"
-                                                class="px-3 py-1.5 text-sm bg-blue-500/10 text-blue-600 hover:bg-blue-500 hover:text-white rounded-lg transition">
+                                                class="px-3 py-1.5 text-sm bg-gama-primary/10 text-gama-primary hover:bg-gama-primary hover:text-white rounded-lg transition">
                                                 Download
                                             </a>
                                         </div>
