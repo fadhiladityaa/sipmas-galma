@@ -113,7 +113,7 @@ class WhatsAppService
         $caption .= "Nomor: {$applicationNumber}\n";
         $caption .= "Jenis: {$serviceName}\n\n";
         $caption .= "📄 Download PDF: {$pdfUrl}\n\n";
-        $caption .= "Silahkan click link di atas untuk mendownload atau login ke akun SIPMAS anda untuk mendownload surat!";
+        $caption .= "Silahkan click link di atas untuk mendownload atau login ke akun SIPMAS anda untuk mendownload surat! ";
         $caption .= "Terima kasih telah menggunakan SIPMAS Galung Maloang.";
 
         return $this->sendText($phoneNumber, $caption);
