@@ -226,7 +226,7 @@
 
                     <!-- Tombol Kembali -->
                     <div class="pt-4 border-t border-gray-100">
-                        <a href="{{ route('rt.dashboard') }}"
+                        <a href="{{ route('rw.dashboard') }}"
                             class="inline-flex items-center gap-2 text-sm text-gama-gray hover:text-gama-primary transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 stroke-width="2">
