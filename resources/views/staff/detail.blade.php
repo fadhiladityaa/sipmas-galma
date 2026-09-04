@@ -112,6 +112,7 @@
                         </h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <!-- KTP -->
+                            <!-- KTP -->
                             <div class="bg-gama-bg/60 rounded-xl p-4 border border-gray-100">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-3">
@@ -130,10 +131,16 @@
                                         </div>
                                     </div>
                                     @if ($application->user->ktp_path)
-                                        <button type="button" onclick="previewKTP()"
-                                            class="px-3 py-1.5 text-sm bg-gama-primary/10 text-gama-primary hover:bg-gama-primary hover:text-white rounded-lg transition">
-                                            Lihat
-                                        </button>
+                                        <div class="flex gap-2">
+                                            <button type="button" onclick="previewKTP()"
+                                                class="px-3 py-1.5 text-sm bg-gama-primary/10 text-gama-primary hover:bg-gama-primary hover:text-white rounded-lg transition">
+                                                Lihat
+                                            </button>
+                                            <a href="{{ route('staff.download.dokumen', ['id' => $application->id, 'type' => 'ktp']) }}"
+                                                class="px-3 py-1.5 text-sm bg-blue-500/10 text-blue-600 hover:bg-blue-500 hover:text-white rounded-lg transition">
+                                                Download
+                                            </a>
+                                        </div>
                                     @else
                                         <span class="text-xs text-gama-gray">-</span>
                                     @endif
@@ -159,10 +166,16 @@
                                         </div>
                                     </div>
                                     @if ($application->user->kk_path)
-                                        <button type="button" onclick="previewKK()"
-                                            class="px-3 py-1.5 text-sm bg-gama-primary/10 text-gama-primary hover:bg-gama-primary hover:text-white rounded-lg transition">
-                                            Lihat
-                                        </button>
+                                        <div class="flex gap-2">
+                                            <button type="button" onclick="previewKK()"
+                                                class="px-3 py-1.5 text-sm bg-gama-primary/10 text-gama-primary hover:bg-gama-primary hover:text-white rounded-lg transition">
+                                                Lihat
+                                            </button>
+                                            <a href="{{ route('staff.download.dokumen', ['id' => $application->id, 'type' => 'kk']) }}"
+                                                class="px-3 py-1.5 text-sm bg-blue-500/10 text-blue-600 hover:bg-blue-500 hover:text-white rounded-lg transition">
+                                                Download
+                                            </a>
+                                        </div>
                                     @else
                                         <span class="text-xs text-gama-gray">-</span>
                                     @endif

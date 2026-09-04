@@ -54,6 +54,33 @@ class StaffController extends Controller
     }
 
     /**
+ * Download dokumen (KTP/KK) warga
+ */
+    public function downloadDokumen($id, $type)
+    {
+        $application = Application::with(['user'])->findOrFail($id);
+        $user = $application->user;
+
+        // Tentukan path berdasarkan type
+        if ($type === 'ktp') {
+            $path = $user->ktp_path;
+            $filename = 'KTP-' . $user->name . '.jpg';
+        } elseif ($type === 'kk') {
+            $path = $user->kk_path;
+            $filename = 'KK-' . $user->name . '.jpg';
+        } else {
+            abort(404, 'Dokumen tidak ditemukan.');
+        }
+
+        if (!$path || !Storage::disk('public')->exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $fullPath = Storage::disk('public')->path($path);
+        return response()->download($fullPath, $filename);
+    }
+
+    /**
      * Daftar Pengajuan
      */
     public function applications(Request $request)

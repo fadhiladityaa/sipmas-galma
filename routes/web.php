@@ -49,6 +49,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::post('/applications/{id}/terbitkan', [StaffController::class, 'terbitkan'])->name('application.terbitkan');
     Route::post('/applications/{id}/reject', [StaffController::class, 'reject'])->name('application.reject');
     Route::get('/riwayat', [StaffController::class, 'riwayat'])->name('riwayat');
+    Route::get('/download-dokumen/{id}/{type}', [StaffController::class, 'downloadDokumen'])->name('download.dokumen');
 });
 
 // Admin Routes
