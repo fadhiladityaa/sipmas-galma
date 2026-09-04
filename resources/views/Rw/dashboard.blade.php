@@ -52,7 +52,7 @@
                 @endif
 
                 <div class="mt-4 text-right">
-                    <a href="{{ route('rt.applications') }}" class="text-sm text-gama-accent hover:text-gama-primary">
+                    <a href="{{ route('rw.applications') }}" class="text-sm text-gama-accent hover:text-gama-primary">
                         Lihat semua →
                     </a>
                 </div>
