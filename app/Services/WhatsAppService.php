@@ -120,6 +120,20 @@ class WhatsAppService
     }
 
     /**
+ * Kirim notifikasi penolakan ke warga
+ */
+    public function notifyRejectToWarga($phoneNumber, $applicationNumber, $serviceName, $reason)
+    {
+        $message = "❌ *Pengajuan Surat Ditolak*\n\n";
+        $message .= "Nomor: {$applicationNumber}\n";
+        $message .= "Jenis: {$serviceName}\n\n";
+        $message .= "Alasan penolakan: {$reason}\n\n";
+        $message .= "Silakan perbaiki dan ajukan ulang melalui SIPMAS Galung Maloang.";
+
+        return $this->sendText($phoneNumber, $message);
+    }
+
+    /**
  * Kirim notifikasi ke RT (pengajuan baru)
  */
 public function notifyRt($rtPhone, $wargaName, $applicationNumber, $serviceName)
