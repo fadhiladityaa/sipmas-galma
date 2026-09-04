@@ -107,7 +107,7 @@ class WhatsAppService
     public function sendSuratToWarga($phoneNumber, $pdfPath, $applicationNumber, $serviceName)
     {
         // HARCODE LINK
-        $pdfUrl = "http://localhost/storage/surat/surat-{$applicationNumber}.pdf";
+        $pdfUrl = "https://sipmas-galma.my.id/storage/surat/surat-{$applicationNumber}.pdf";
 
         $caption = "✅ *Surat Anda Telah Diterbitkan!*\n\n";
         $caption .= "Nomor: {$applicationNumber}\n";
