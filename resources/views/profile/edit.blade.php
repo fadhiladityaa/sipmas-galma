@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg my-11">
+            <div class="bg-white lg:hidden overflow-hidden shadow-sm sm:rounded-lg my-11">
                 <div class="p-6">
                     @include('profile.partials.logout')
                 </div>
