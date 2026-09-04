@@ -258,7 +258,7 @@
             <p class="text-sm text-gama-gray mb-4">Berikan alasan penolakan agar pemohon dapat memperbaiki
                 pengajuannya.</p>
 
-            <form action="{{ route('rt.application.reject', $application->id) }}" method="POST">
+            <form action="{{ route('rw.application.reject', $application->id) }}" method="POST">
                 @csrf
                 <div class="mb-4">
                     <label for="reason" class="block text-sm font-medium text-gama-text mb-1">Alasan
