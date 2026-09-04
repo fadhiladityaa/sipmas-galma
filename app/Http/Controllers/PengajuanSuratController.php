@@ -77,21 +77,21 @@ class PengajuanSuratController extends Controller
         }
 
         // GENERATE NOMOR UNIK
-        $lastNumber = Application::where('application_number', 'LIKE', 'REQ-2026-08-%')
-            ->max('application_number');
+        $prefix = 'REQ-' . date('Y-m') . '-';
+        $lastNumber = Application::where('application_number', 'LIKE', $prefix . '%')
+            ->orderBy('application_number', 'desc')
+            ->first();
 
         if ($lastNumber) {
-            $lastSeq = (int) substr($lastNumber, -6);
+            $lastSeq = (int) substr($lastNumber->application_number, -6);
             $newNumber = str_pad($lastSeq + 1, 6, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '000001';
         }
 
-        $applicationNumber = 'REQ-' . date('Y-m') . '-' . $newNumber;
+        $applicationNumber = $prefix . $newNumber;
 
-        // =============================================
         // 1. SIMPAN PENGAJUAN
-        // =============================================
         $application = Application::create([
             'user_id' => $user->id,
             'rt_id' => $user->rt_id,
@@ -104,9 +104,7 @@ class PengajuanSuratController extends Controller
             'submitted_at' => now(),
         ]);
 
-        // =============================================
         // 2. PROSES DOKUMEN
-        // =============================================
         $ktpPath = $user->ktp_path;
         $kkPath = $user->kk_path;
 
