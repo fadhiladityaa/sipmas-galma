@@ -36,7 +36,7 @@
                                 class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-100">
                                 <div>
                                     <p class="font-medium text-gama-text">{{ $app->user->name }}</p>
-                                    <p class="text-sm text-gama-gray">{{ $app->service->name }} •
+                                    <p class="text-sm text-gama-gray">{{ $app->service->name ?? 'Lainnya' }} •
                                         {{ $app->application_number }}</p>
                                 </div>
                                 <a href="{{ route('staff.application.detail', $app->id) }}"

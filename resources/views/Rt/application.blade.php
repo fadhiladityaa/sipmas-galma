@@ -21,7 +21,7 @@
                                 <tr class="border-b border-gray-100">
                                     <td class="px-4 py-3">{{ $app->application_number }}</td>
                                     <td class="px-4 py-3">{{ $app->user->name }}</td>
-                                    <td class="px-4 py-3">{{ $app->service->name }}</td>
+                                    <td class="px-4 py-3">{{ $app->service->name ?? 'Lainnya' }}</td>
                                     <td class="px-4 py-3">
                                         <span
                                             class="px-2 py-1 rounded-full text-xs
