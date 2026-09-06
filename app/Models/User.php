@@ -29,6 +29,19 @@ class User extends Authenticatable
         'rw_id',
     ];
 
+    // app/Models/User.php
+    public function dashboardRouteName(): string
+    {
+        return match ($this->role) {
+            'warga' => 'warga.home',
+            'rt'    => 'rt.dashboard',
+            'rw'    => 'rw.dashboard',
+            'staff' => 'staff.applications',
+            'admin' => 'admin.settings',
+            default => 'home',
+        };
+    }
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -48,9 +61,7 @@ class User extends Authenticatable
         return $this->hasMany(Document::class);
     }
 
-    // ==========================================
     // RELASI WARGA
-    // ==========================================
 
     // RT tempat tinggal warga
     public function rt()

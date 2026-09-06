@@ -7,13 +7,17 @@ use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\RtController;
 use App\Http\Controllers\RwController;
 use App\Http\Controllers\StaffController;
-use App\Models\Letter;
 use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Auth;
+
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route(Auth::user()->dashboardRouteName());
+    }
     return view('welcome');
-});
+})->name('home');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -75,7 +79,7 @@ Route::middleware(['auth', 'role:warga'])->prefix('warga')->name('warga.')->grou
 Route::get('/test-wa', function () {
     $phoneNumber = '085756956684'; // Ganti dengan nomor HP Anda
 
-    $wa = app(App\Services\WhatsAppService::class);
+    $wa = app(WhatsAppService::class);
     $result = $wa->sendText(
         $phoneNumber,
         "📢 *Test WhatsApp dari SIPMAS!*\n\nIni adalah pesan test dari sistem SIPMAS Galung Maloang."
