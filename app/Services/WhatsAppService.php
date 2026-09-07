@@ -141,8 +141,8 @@ public function notifyRt($rtPhone, $wargaName, $applicationNumber, $serviceName)
     $message = "📢 *Pengajuan Surat Baru!*\n\n";
     $message .= "Dari: {$wargaName}\n";
     $message .= "Nomor: {$applicationNumber}\n";
-    $message .= "Jenis: {$serviceName}\n\n";
-    $message .= "Silakan login ke SIPMAS untuk menyetujui atau menolak pengajuan.";
+    $message .= "Silakan login ke SIPMAS untuk menyetujui atau menolak pengajuan atau klik link di bawah ini.";
+    $message .= "https://sipmas-galma.my.id";
 
     return $this->sendText($rtPhone, $message);
 }
@@ -173,7 +173,8 @@ public function notifyRt($rtPhone, $wargaName, $applicationNumber, $serviceName)
             $message .= "Dari: {$wargaName}\n";
             $message .= "Nomor: {$applicationNumber}\n";
             $message .= "Jenis: {$serviceName}\n\n";
-            $message .= "Silakan login ke SIPMAS untuk menyetujui atau menolak pengajuan.";
+            $message .= "Silakan login ke SIPMAS untuk menyetujui atau menolak pengajuan atau klik link di bawah ini.";
+            $message .= "https://sipmas-galma.my.id";
 
             return $this->sendText($rwPhone, $message);
         }
