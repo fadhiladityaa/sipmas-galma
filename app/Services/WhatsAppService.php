@@ -142,6 +142,7 @@ public function notifyRt($rtPhone, $wargaName, $applicationNumber, $serviceName)
     $message .= "Dari: {$wargaName}\n";
     $message .= "Nomor: {$applicationNumber}\n";
     $message .= "Silakan login ke SIPMAS untuk menyetujui atau menolak pengajuan atau klik link di bawah ini.\n";
+    $message .= "\n";
     $message .= "https://sipmas-galma.my.id";
 
     return $this->sendText($rtPhone, $message);
