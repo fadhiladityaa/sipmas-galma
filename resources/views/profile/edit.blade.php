@@ -55,25 +55,30 @@
             @endphp
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-4 bg-gama-bg/50 border-b">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gama-text">Kelengkapan Profil</p>
-                            <p class="text-xs text-gama-gray">{{ $completed }} dari {{ $total }} data terisi
-                            </p>
+                @auth
+                    @if (Auth::user()->role == 'warga')
+                        <div class="p-4 bg-gama-bg/50 border-b">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gama-text">Kelengkapan Profil</p>
+                                    <p class="text-xs text-gama-gray">{{ $completed }} dari {{ $total }} data
+                                        terisi
+                                    </p>
+                                </div>
+                                <span class="text-sm font-bold text-gama-primary">{{ $percent }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="bg-gama-accent h-2 rounded-full transition-all duration-500"
+                                    style="width: {{ $percent }}%"></div>
+                            </div>
+                            @if ($percent < 100)
+                                <p class="text-xs text-red-500 mt-2">Lengkapi semua data untuk dapat mengajukan surat.</p>
+                            @else
+                                <p class="text-xs text-green-600 mt-2">Semua data lengkap! Anda dapat mengajukan surat.</p>
+                            @endif
                         </div>
-                        <span class="text-sm font-bold text-gama-primary">{{ $percent }}%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                        <div class="bg-gama-accent h-2 rounded-full transition-all duration-500"
-                            style="width: {{ $percent }}%"></div>
-                    </div>
-                    @if ($percent < 100)
-                        <p class="text-xs text-red-500 mt-2">Lengkapi semua data untuk dapat mengajukan surat.</p>
-                    @else
-                        <p class="text-xs text-green-600 mt-2">Semua data lengkap! Anda dapat mengajukan surat.</p>
                     @endif
-                </div>
+                @endauth
             </div>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
